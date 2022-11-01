@@ -1,5 +1,5 @@
-# {PROJECT NAME}
-## NHSX Analytics Unit - PhD Internship Project
+# Hypergraph Testing
+## NHS England -  Digital Analytics and Research Team - PhD Internship Project
 
 ### About the Project
 
@@ -7,16 +7,28 @@
 
 This repository holds code for the {PROJECT NAME} {SHORT DESCRIPTION}
 
-[Link to original project propsoal](https://nhsx.github.io/nhsx-internship-projects/)
+[Link to original project proposal](https://nhsx.github.io/nhsx-internship-projects/)
 
 _**Note:** Only public or fake data are shared in this repository._
 
 ### Project Stucture
 
-- The main code is found in the root of the repository (see Usage below for more information)
-- The accompanying [report](./reports/report.pdf) is also available in the `reports` folder
-- More information about the code usage can be found in the [model card](./model_card.md)
-- {OTHER REPO STRUCTURE}
+- The main code is found in the `src` folder of the repository (see Usage below for more information)
+
+```
+.
+├── docs                    # Documentation
+├── notebooks               # Notebooks
+├── src                     # Source files
+├── .gitignore
+├── CHANGELOG.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── LICENCE
+├── OPEN_CODE_CHECKLIST.md
+├── README.md
+└── requirements.txt
+```
 
 ### Built With
 
@@ -31,14 +43,12 @@ To get a local copy up and running follow these simple steps.
 
 To clone the repo:
 
-`git clone https://github.com/nhsx/{REPO NAME}`
+`git clone https://github.com/nhsx/hypergraph-testing`
 
 To create a suitable environment:
-- ```python -m venv _env```
-- `source _env/bin/activate`
-- `pip install -r requirements.txt`
-
-{ADDITIONAL TECHNICAL SUPPORT AND NEEDS} 
+- Build conda environment via `conda create --name hg-test python=3.8`
+- Activate environment `conda activate hg-test`
+- Install requirements via `python -m pip install -r ./requirements.txt`
 
 ### Usage
 {DESCRIPTION OF CODE}
