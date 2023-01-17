@@ -97,12 +97,12 @@ def filter_data(
                     "for a residency break..."
                 )
             )
-        demo_df = demo_df.loc[
-            data["COHORT_END_DESC"] != "Residency break"
-        ].reset_index(drop=True)
-        data_df = data_df.loc[
-            data["COHORT_END_DESC"] != "Residency break"
-        ].reset_index(drop=True)
+        demo_df = demo_df.loc[data["COHORT_END_DESC"] != "Residency break"].reset_index(
+            drop=True
+        )
+        data_df = data_df.loc[data["COHORT_END_DESC"] != "Residency break"].reset_index(
+            drop=True
+        )
         if verbose:
             N_removed = N_obs - demo_df.shape[0]
             print(
@@ -121,14 +121,9 @@ def filter_data(
         if verbose:
             date_string = str(d) + "/" + str(m) + "/" + str(y)
             print(
-                (
-                    "\nRemoving individuals whose condition dates < "
-                    f"{date_string}..."
-                )
+                ("\nRemoving individuals whose condition dates < " f"{date_string}...")
             )
-        date_bool = np.all(
-            (data_df > time_threshold) | (pd.isnull(data_df)), axis=1
-        )
+        date_bool = np.all((data_df > time_threshold) | (pd.isnull(data_df)), axis=1)
         data_df = data_df.loc[date_bool].reset_index(drop=True)
         demo_df = demo_df.loc[date_bool].reset_index(drop=True)
         if verbose:
@@ -185,9 +180,9 @@ def filter_data(
         # diseases.
         if diff_diseases != []:
             diff_columns = [f"FIRST_{col}" for col in diff_diseases]
-            all_data_binmat = np.array(
-                data[diff_columns].astype(bool).astype(int)
-            )[dir_ind]
+            all_data_binmat = np.array(data[diff_columns].astype(bool).astype(int))[
+                dir_ind
+            ]
             exc_ind = np.where(all_data_binmat.sum(axis=1) == 0)[0]
             data_df = data_df.loc[exc_ind].reset_index(drop=True)
             demo_df = demo_df.loc[exc_ind].reset_index(drop=True)
@@ -359,13 +354,9 @@ def process_individuals(data_arr, data_binmat, verbose=False):
             ]
             obs_1dupls_binmat = data_binmat[ind_1dupls_og]
             conds_1dupls = [dupl_cond_split[i][j] for j in dup_seq_1dupls]
-            condidx_1dupls = list(
-                dupl_seq_split[i][dup_seq_1dupls].astype(np.int8)
-            )
+            condidx_1dupls = list(dupl_seq_split[i][dup_seq_1dupls].astype(np.int8))
 
-            dupl_obs_ogidx = np.concatenate(
-                [dupl_obs_ogidx, ind_1dupls_og], axis=0
-            )
+            dupl_obs_ogidx = np.concatenate([dupl_obs_ogidx, ind_1dupls_og], axis=0)
             dupl_obs_binmat = np.concatenate(
                 [dupl_obs_binmat, obs_1dupls_binmat], axis=0
             )
@@ -382,18 +373,13 @@ def process_individuals(data_arr, data_binmat, verbose=False):
     ALL_OBS = np.concatenate(
         [single_obs_binmat, clean_obs_binmat, dupl_obs_binmat], axis=0
     )
-    ALL_OGIDX = np.concatenate(
-        [single_traj, clean_traj, dupl_obs_ogidx], axis=0
-    )
+    ALL_OGIDX = np.concatenate([single_traj, clean_traj, dupl_obs_ogidx], axis=0)
 
     if verbose:
         print(f"\nNumber of individuals with single disease: {n_single_inds}")
         print(f"Number of individuals with clean progressions: {n_clean_inds}")
         print(
-            (
-                "Number of individuals with duplicate progressions: "
-                f"{n_all_dupl_inds}"
-            )
+            ("Number of individuals with duplicate progressions: " f"{n_all_dupl_inds}")
         )
         print(
             (
@@ -626,9 +612,7 @@ def compute_directed_model(
     # directed incidence matrix. Dummy vector used to fill row of incidence
     # matrix as initialised as empty
     hyperedge_prev = np.zeros((max_hyperedges), dtype=np.float64)
-    hyperarc_worklist = np.empty(
-        shape=(max_hyperarcs, n_diseases), dtype=np.int8
-    )
+    hyperarc_worklist = np.empty(shape=(max_hyperarcs, n_diseases), dtype=np.int8)
     hyperarc_prev = np.zeros((max_hyperedges, n_diseases), dtype=np.float64)
     node_prev = np.zeros((2 * n_diseases), dtype=np.float64)
     pop_prev = np.zeros(n_diseases, dtype=np.int64)
@@ -678,9 +662,9 @@ def compute_directed_model(
                 for i in range(n_ind_cond - 2):
                     node_prev[ind_cond[i]] += 1.0
                 node_prev[ind_cond[n_ind_cond - 2 : n_ind_cond]] += 0.5
-                node_prev[
-                    n_diseases + ind_cond[n_ind_cond - 2 : n_ind_cond]
-                ] += (node_weight / 2)
+                node_prev[n_diseases + ind_cond[n_ind_cond - 2 : n_ind_cond]] += (
+                    node_weight / 2
+                )
 
             # First disease individual had contributes to single-set hyperedge
             # prevalence. If duplicate exists at beginning of progression, then
@@ -927,6 +911,10 @@ def compute_weights(
     # rows of the original input binmat. Prevalence array comes from granular
     # split-and-count of individuals of their final multimorbidity set.
     hyperarc_num_prev = hyperedge_prev.copy()
+
+    columns_idxs = np.arange(N_diseases).astype(np.int8)
+    hyperedge_denom = utils.compute_integer_repr(binmat, columns_idxs, colarr)
+
     if contribution_type == "exclusive":
         hyperedge_num_prev = hyperedge_denom.copy()
         hyperedge_arr = np.unique(binmat, axis=0)
@@ -953,9 +941,7 @@ def compute_weights(
     hyperedge_worklist = utils.comp_edge_worklists(
         hyperedge_arr, contribution_type, shuffle=False
     )
-    hyperedge_indexes, hyperedge_N = utils.compute_bin_to_int(
-        hyperedge_worklist
-    )
+    hyperedge_indexes, hyperedge_N = utils.compute_bin_to_int(hyperedge_worklist)
     hyperedge_cols = np.asarray(
         list(
             map(
@@ -982,12 +968,9 @@ def compute_weights(
     # the reformulation of the Sorrensen-Dice coefficient
     elif (
         contribution_type == "power"
-        and weight_function
-        == weight_functions.modified_sorensen_dice_coefficient
+        and weight_function == weight_functions.modified_sorensen_dice_coefficient
     ):
-        hyperedge_num_prev = utils.comp_pwset_prev(
-            binmat, hyperedge_worklist, colarr
-        )
+        hyperedge_num_prev = utils.comp_pwset_prev(binmat, hyperedge_worklist, colarr)
         denom_prev = hyperedge_num_prev.copy()
 
     # If using the modified sorensen-dice coefficient, this denominator will
@@ -1015,9 +998,7 @@ def compute_weights(
 
         # If Power dice then add single set disease weights manually
         if dice_type == 0:
-            hyperedge_weights[:N_diseases] = (
-                binmat.sum(axis=0) / binmat.shape[0]
-            )
+            hyperedge_weights[:N_diseases] = binmat.sum(axis=0) / binmat.shape[0]
 
     # Otherwise, If using overlap coefficient or older versions of the
     # Sorensen-Dice coefficients
@@ -1031,9 +1012,7 @@ def compute_weights(
         # the proportion of individuals with the disease out of all
         # individuals.
         else:
-            hyperedge_weights[:N_diseases] = (
-                binmat.sum(axis=0) / binmat.shape[0]
-            )
+            hyperedge_weights[:N_diseases] = binmat.sum(axis=0) / binmat.shape[0]
             hyperedge_counter = N_diseases
 
         # Compute hyperedge weights
@@ -1055,9 +1034,7 @@ def compute_weights(
     hyperedge_weights_df = pd.DataFrame(
         {"disease set": hyperedge_cols, "weight": hyperedge_weights}
     )
-    hyperedge_weights_df = hyperedge_weights_df[
-        hyperedge_weights_df.weight > 0
-    ]
+    hyperedge_weights_df = hyperedge_weights_df[hyperedge_weights_df.weight > 0]
 
     if verbose:
         print(f"Completed in {round(t.time()-st,2)} seconds.")
@@ -1165,9 +1142,9 @@ def compute_weights(
                 for i, p in enumerate(hyperarc_progs)
                 if all([True if d in p else False for d in dis])
             ]
-            top_hyperarcs_df = (
-                sorted_hyperarc_weights_df.iloc[title_prog_idx]
-            ).iloc[:n]
+            top_hyperarcs_df = (sorted_hyperarc_weights_df.iloc[title_prog_idx]).iloc[
+                :n
+            ]
 
         # Initialise the hyperedge counter to fill edge_arc_df with hyperarcs
         # and their parents.
@@ -1207,7 +1184,7 @@ def compute_weights(
             try:
                 edge_weight = hyperedge_info.weight.iloc[0]
                 hyperedge_sorted = hyperedge_info["disease set"].iloc[0]
-            except:
+            except UserWarning:
                 edge_weight = 0.0
                 hyperedge_sorted = ""
 
@@ -1216,14 +1193,9 @@ def compute_weights(
             # previous iteration
             if edge_arc_df.disease_set.shape[0] > 0:
                 sorted_sets = np.array(
-                    [
-                        ", ".join(np.sort(s.split(", ")))
-                        for s in edge_arc_df.disease_set
-                    ]
+                    [", ".join(np.sort(s.split(", "))) for s in edge_arc_df.disease_set]
                 )
-                check_edge = edge_weight == np.array(
-                    list(edge_arc_df.hyperedge_weight)
-                )
+                check_edge = edge_weight == np.array(list(edge_arc_df.hyperedge_weight))
                 check_dis = hyperedge_sorted == sorted_sets
 
             # If first entry in edge_arc_df, then no need to check (as it
@@ -1240,9 +1212,7 @@ def compute_weights(
             # row index for appending the child hyperarc and its parent easily
             # to edge_arc_df
             if np.any(check_bool):
-                hyperedge_idx = edge_arc_df[check_bool][
-                    "hyperedge_index"
-                ].iloc[0]
+                hyperedge_idx = edge_arc_df[check_bool]["hyperedge_index"].iloc[0]
             # Otherwise, this is a new hyperarc and corresponding parents, so
             # incremement hyperedge_counter
             else:
@@ -1265,9 +1235,7 @@ def compute_weights(
         # Superimpose top hyperarcs onto their parent hyperedges
         arc_palette = np.array(
             plt.get_cmap("nipy_spectral")(
-                np.linspace(
-                    0.1, 0.9, np.unique(edge_arc_df.hyperedge_index).shape[0]
-                )
+                np.linspace(0.1, 0.9, np.unique(edge_arc_df.hyperedge_index).shape[0])
             )
         )
         palette_idxs = np.array(edge_arc_df.hyperedge_index, dtype=np.int8)
@@ -1282,9 +1250,7 @@ def compute_weights(
         ax.set_ylabel("Disease Progression (Hyperarc)", fontsize=18)
         ax.set_yticklabels(edge_arc_df.progression, fontsize=15)
         # ax.set_title("Superimposed Hyperedge/Hyperarc Weights", fontsize=18)
-        ax.set_xlabel(
-            "Hyperedge (shaded)/Hyperarc (solid) Weight", fontsize=18
-        )
+        ax.set_xlabel("Hyperedge (shaded)/Hyperarc (solid) Weight", fontsize=18)
         ax1 = ax.twinx()
         sns.barplot(
             x="hyperedge_weight",
@@ -1310,9 +1276,7 @@ def compute_weights(
         else:
             figsize = (12, 15)
         node_fig, ax = plt.subplots(1, 1, figsize=figsize)
-        sns.barplot(
-            x="weight", y="node", data=node_weights_df, ax=ax, palette=palette
-        )
+        sns.barplot(x="weight", y="node", data=node_weights_df, ax=ax, palette=palette)
         ax.axvline(x=1 / 2, ymin=0, ymax=10, c="r", linestyle="--")
         # ax.set_title("Node Weights", fontsize=18)
         ax.set_xticks(ax.get_xticks())
@@ -1328,9 +1292,7 @@ def compute_weights(
                 fpath = save_images[1]
             hyperedge_fig.savefig(os.path.join(fpath, "hyperedge_weights.png"))
             hyperarc_fig.savefig(os.path.join(fpath, "hyperarc_weights.png"))
-            hyphyp_fig.savefig(
-                os.path.join(fpath, "hyperedge_arc_weights.png")
-            )
+            hyphyp_fig.savefig(os.path.join(fpath, "hyperedge_arc_weights.png"))
             node_fig.savefig(os.path.join(fpath, "node_weights.png"))
 
     # If returning incidence matrix
@@ -1357,9 +1319,7 @@ def compute_weights(
 ###############################################################################
 
 
-def setup_vars(
-    inc_mat, N_diseases, hyperarc_weights, hyperarc_titles, node_weights
-):
+def setup_vars(inc_mat, N_diseases, hyperarc_weights, hyperarc_titles, node_weights):
     """
     This function organises the directed incidence matrix into it's tail and
     head components, taking into account the inclusion of mortality and

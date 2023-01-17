@@ -20,7 +20,9 @@ _**Note:** Only public or fake data are shared in this repository._
 ├── docs                    # Documentation
 ├── notebooks               # Notebooks
 ├── src                     # Source files
+├── .flake8
 ├── .gitignore
+├── .pre-commit-config.yaml
 ├── CHANGELOG.md
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
