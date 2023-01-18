@@ -1185,7 +1185,7 @@ def compute_weights(
             hyperedge_info = sorted_hyperedge_weights_df[
                 sorted_hyperedge_weights_df["disease set"] == hyperedge
             ]
-            if hyperedge_info.shape[0] == 0:
+            if hyperedge_info.shape[0] != 0:
                 edge_weight = hyperedge_info.weight.iloc[0]
                 hyperedge_sorted = hyperedge_info["disease set"].iloc[0]
             else:
