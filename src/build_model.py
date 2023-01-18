@@ -964,6 +964,10 @@ def compute_weights(
     if weight_function == weight_functions.comp_overlap_coeff:
         denom_prev = pop_prev.copy()
 
+    # If "exclusive" contribution
+    elif contribution_type == "exclusive":
+        denom_prev = hyperedge_denom.copy()
+
     # If "power" contribution, need to build prevalence array if we're using
     # the reformulation of the Sorrensen-Dice coefficient
     elif (
@@ -1181,10 +1185,10 @@ def compute_weights(
             hyperedge_info = sorted_hyperedge_weights_df[
                 sorted_hyperedge_weights_df["disease set"] == hyperedge
             ]
-            try:
+            if hyperedge_info.shape[0] == 0:
                 edge_weight = hyperedge_info.weight.iloc[0]
                 hyperedge_sorted = hyperedge_info["disease set"].iloc[0]
-            except UserWarning:
+            else:
                 edge_weight = 0.0
                 hyperedge_sorted = ""
 
