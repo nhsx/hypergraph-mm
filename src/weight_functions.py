@@ -382,9 +382,7 @@ def modified_sorensen_dice_coefficient(
         # Check out of all hyperedges, which contain the source hyperedge using
         # binary AND operation. This will always contain the source hyperedge
         # in src_in_tgt as the first element, so skip this one using [1:]
-        src_in_tgt = np.where(src_hyper_idx & hyperedge_idx == src_hyper_idx)[
-            0
-        ][1:]
+        src_in_tgt = np.where(src_hyper_idx & hyperedge_idx == src_hyper_idx)[0][1:]
         for tgt_idx in src_in_tgt:
 
             # Work out target hyper edge unique integer and prevalence from
@@ -398,9 +396,7 @@ def modified_sorensen_dice_coefficient(
             hyperedge_denom[src_idx] += (
                 tgt_denom_w * tgt_denom_prev * typ
             )  # Upper power set
-            hyperedge_denom[tgt_idx] += (
-                tgt_denom_w * src_denom_prev
-            )  # Lower power set
+            hyperedge_denom[tgt_idx] += tgt_denom_w * src_denom_prev  # Lower power set
 
     return hyperedge_num / hyperedge_denom
 
@@ -495,9 +491,7 @@ def comp_hyperarc_weight(
     parent_weight = hyperedge_weights[hyperedge_indexes == bin_ind][0]
 
     # Prevalence of hyperarc relative to hyperedge
-    hyperarc_weight, denom = comp_hyperedge_overlap(
-        inds, hyperarc_prev, hyperedge_prev
-    )
+    hyperarc_weight, denom = comp_hyperedge_overlap(inds, hyperarc_prev, hyperedge_prev)
 
     return parent_weight * hyperarc_weight, denom
 
@@ -553,9 +547,7 @@ def setup_weight_comp(
     dis_pops = data_binmat.sum(axis=0)
 
     # Build string list/arrays of disease names/nodes
-    dis_nodes = [dis + "_-" for dis in dis_cols] + [
-        dis + "_+" for dis in dis_cols
-    ]
+    dis_nodes = [dis + "_-" for dis in dis_cols] + [dis + "_+" for dis in dis_cols]
     disease_dict = {name: dis_cols[i] for i, name in enumerate(dis_names)}
 
     # Default palette for node weights
@@ -563,9 +555,7 @@ def setup_weight_comp(
     # palette="bright",
     # n_colors=n_diseases
     # )))
-    palette = 2 * list(
-        plt.get_cmap("nipy_spectral")(np.linspace(0.1, 0.9, n_diseases))
-    )
+    palette = 2 * list(plt.get_cmap("nipy_spectral")(np.linspace(0.1, 0.9, n_diseases)))
 
     # If Complete Set Sorensen-Dice coefficient, we can compute self-edges
     # within formulation, so add self-edges to hyperarc worklist
@@ -573,8 +563,7 @@ def setup_weight_comp(
     hyperarc_weights = np.zeros(N_hyperarcs, dtype=np.float64)
     hyperarc_progs = np.zeros(N_hyperarcs, dtype="<U512")
     if weight_function == modified_dice_coefficient_comp or (
-        weight_function == modified_sorensen_dice_coefficient
-        and dice_type == 1
+        weight_function == modified_sorensen_dice_coefficient and dice_type == 1
     ):
         self_edge_worklist = np.array(
             [[i] + (n_diseases - 1) * [-1] for i in range(n_diseases)],
@@ -648,8 +637,8 @@ def compute_hyperedge_weights(
         binmat (np.array, dtype=np.uint8) : Binary disease flag array for
         individuals.
 
-        inpt (3-tuple) : 3-tuple of lists storing initialise hyperedge weights,
-        hyperedge binary-integer encodings and hyperedge disease titles.
+        hyperedge_weights (3-tuple) : 3-tuple of lists storing initialise hyperedge
+        weights, hyperedge binary-integer encodings and hyperedge disease titles.
 
         worklist (np.array, dtype=np.int8) : Hyperedge worklist.
 

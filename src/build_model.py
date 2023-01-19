@@ -894,13 +894,16 @@ def compute_weights(
         weight_function,
         dice_type,
     )
+
     string_output, hyperarc_output, node_weights, palette = output
+
     (
         hyperarc_progs,
         hyperarc_weights,
         hyperarc_worklist,
         hyperarc_counter,
     ) = hyperarc_output
+
     colarr, nodes, dis_dict = string_output
 
     # Build DataFrame for node weights
