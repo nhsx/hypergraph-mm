@@ -1,0 +1,39 @@
+site_name: Hypergraph Testing
+site_url: https://example.com/
+nav:
+  - Home: index.md
+  - src:
+    - Build Model: src/build_model.md
+    - Centrality Utilities: src/centrality_utils.md
+    - Centrality: src/centrality.md
+    - Utilities: src/utils.md
+    - Weight Functions: src/weight_functions.md
+
+theme:
+  name: material
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            show_root_toc_entry: false
+            show_root_full_path: false
+            show_source: false
+            show_if_no_docstring: true
+            heading_level: 3
+
+watch:
+  - src
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

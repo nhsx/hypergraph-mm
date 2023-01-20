@@ -5,26 +5,32 @@
 
 [![status: experimental](https://github.com/GIScience/badges/raw/master/status/experimental.svg)](https://github.com/GIScience/badges#experimental)
 
-This repository holds code for the {PROJECT NAME} {SHORT DESCRIPTION}
 
-[Link to original project proposal](https://nhsx.github.io/nhsx-internship-projects/)
+[![MkDocs Material](https://img.shields.io/badge/style-MkDocs%20Material-darkblue "Markdown Style: MkDocs")](https://squidfunk.github.io/mkdocs-material/reference/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+
+This repository holds supporting code for the Transforming Healthcare Data with Graph-based Techniques Using SAIL DataBank project including a copy of the framework built to perform the hypergraph calculations.  A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/).
 
 _**Note:** Only public or fake data are shared in this repository._
 
 ### Project Stucture
 
-- The main code is found in the `src` folder of the repository (see Usage below for more information)
+The main code is found in the `src` folder of the repository (see Usage below for more information)
 
 ```
 .
 ├── docs                    # Documentation
 ├── notebooks               # Notebooks
 ├── src                     # Source files
+├── .flake8
 ├── .gitignore
+├── .pre-commit-config.yaml
 ├── CHANGELOG.md
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
 ├── LICENCE
+├── mkdocs.yml
 ├── OPEN_CODE_CHECKLIST.md
 ├── README.md
 └── requirements.txt
@@ -33,7 +39,9 @@ _**Note:** Only public or fake data are shared in this repository._
 ### Built With
 
 [![Python v3.8](https://img.shields.io/badge/python-v3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
-- {LIST OF MAIN PACKAGE VERSIONS}
+- [Numba](https://numba.pydata.org/)
+- [NumPy](https://numpy.org/)
+- [SciPy](https://scipy.org/)
 
 ### Getting Started
 
@@ -45,27 +53,31 @@ To clone the repo:
 
 `git clone https://github.com/nhsx/hypergraph-testing`
 
-To create a suitable environment:
+To create a suitable environment we suggest:
 - Build conda environment via `conda create --name hg-test python=3.8`
 - Activate environment `conda activate hg-test`
 - Install requirements via `python -m pip install -r ./requirements.txt`
 
+The repository uses [pre-commit](https://pre-commit.com) hooks to enforce code style using [Black](https://github.com/psf/black), follows [flake8](https://github.com/PyCQA/flake8), and performs a few other checks.  See `.pre-commit-config.yaml` for more details. These hooks will also need installing locally via:
+
+```{bash}
+pre-commit autoupdate
+pre-commit install
+```
+
+and then will be checked on commit.
+
 ### Usage
-{DESCRIPTION OF CODE}
+See the examples in the `notebooks` folder for usage.
 
-#### Outputs
-{LIST AND DESCRIPTION OF OUTPUTS}
+### Documentation
+The documentation is found in the `docs` folder and uses [mkdocs](https://www.mkdocs.org/).  To make a local copy of the documentation:
 
-{NOTES ON REPRODUCIBILITY OF RESULTS}
-
-#### Datasets
-{DESCRIPTION AND LINKS TO DATASETS}
-
-{LINK TO FAKE DATA TO SUPPORT INITAIL CODE RUNS}
+`mkdocs serve`
 
 ### Roadmap
 
-See the {LINK TO REPO ISSUES} for a list of proposed features (and known issues).
+See the [Issues](https://github.com/nhsx/hypergraph-testing/issues) in GitHub for a list of proposed features (and known issues).
 
 ### Contributing
 
@@ -95,7 +107,6 @@ of the [Open Government 3.0][ogl] licence.
 
 ### Contact
 
-To find out more about the [Analytics Unit](https://www.nhsx.nhs.uk/key-tools-and-info/nhsx-analytics-unit/) visit our [project website](https://nhsx.github.io/AnalyticsUnit/projects.html) or get in touch at [analytics-unit@nhsx.nhs.uk](mailto:analytics-unit@nhsx.nhs.uk).
+To find out more about the [Digital Analytics and Research Team](https://www.nhsx.nhs.uk/key-tools-and-info/nhsx-analytics-unit/) visit our [project website](https://nhsx.github.io/AnalyticsUnit/projects.html) or get in touch at [analytics-unit@nhsx.nhs.uk](mailto:analytics-unit@nhsx.nhs.uk).
 
 <!-- ### Acknowledgements -->
-

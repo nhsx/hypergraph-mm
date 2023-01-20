@@ -1,0 +1,47 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.6.1
+    hooks:
+      - id: nbstripout
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.11.4
+    hooks:
+      - id: isort
+        name: isort - Sort Python imports (auto-fixes)
+        types: [cython, pyi, python]
+        args: ["--profile", "black", "--filter-files"]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        name: flake8 - Python linting
+
+  - repo: https://github.com/psf/black
+    rev: 22.12.0 # Replace by any tag/version: https://github.com/psf/black/tags
+    hooks:
+      - id: black
+        name: black - consistent Python code formatting (auto-fixes)
+        language_version: python # Should be a command that runs python3.6+
+
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.6.1
+    hooks:
+      - id: nbqa-isort
+        name: nbqa-isort - Sort Python imports (notebooks; auto-fixes)
+        # strangely the args need to be concatenated
+        args: ["--profile=black"]
+      - id: nbqa-black
+        name: nbqa-black - consistent Python code formatting (notebooks; auto-fixes)
+        additional_dependencies: [black==22.3.0]
