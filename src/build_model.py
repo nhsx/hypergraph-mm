@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-import centrality_utils
-import utils
-import weight_functions
+from src import centrality_utils
+from src import utils
+from src import weight_functions
 
 ###############################################################################
 # 1. CREATE DIRECTED DATA

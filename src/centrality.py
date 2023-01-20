@@ -3,7 +3,7 @@ import time as t
 import numba
 import numpy as np
 
-import centrality_utils
+from src import centrality_utils
 
 ###############################################################################
 # 1. ADJACENCY MATRIX
@@ -77,9 +77,7 @@ def comp_adjacency(
     for i in range(nrows):
         for j in range(nrows):
             for k in range(ncols):
-                intermediate[i, j] += (
-                    weighted_incidence[i, k] * inc_mat.T[k, j]
-                )
+                intermediate[i, j] += weighted_incidence[i, k] * inc_mat.T[k, j]
 
     # 3) diag(M W M^T v) can be done in one step using W M^T from before
     subt = np.zeros(nrows, dtype=np.float32)
@@ -192,9 +190,7 @@ def eigenvector_centrality(
     eigenvalue_estimates, eigenvalue_error_estimates = [], []
     if weight_resultant:
         res_weight_sqroot = np.sqrt(res_weight)
-        inc_mat = centrality_utils.matrix_mult(
-            inc_mat_original, res_weight_sqroot
-        )
+        inc_mat = centrality_utils.matrix_mult(inc_mat_original, res_weight_sqroot)
     else:
         inc_mat = inc_mat_original
 
@@ -208,18 +204,14 @@ def eigenvector_centrality(
         print("\rRunning iteration {}...".format(iteration), end="")
 
         # Iterate over vector
-        new_eigenvector_estimate = (
-            centrality_utils.iterate_eigencentrality_vector(
-                inc_mat, weight, old_eigenvector_estimate
-            )
+        new_eigenvector_estimate = centrality_utils.iterate_eigencentrality_vector(
+            inc_mat, weight, old_eigenvector_estimate
         )
 
         # To estimate eigenvalue and error, take ratio of new to old
         # eigenvector ignoring zeros, whose mean and standard deviation
         # represent new estimate and error
-        mask = (new_eigenvector_estimate != 0) & (
-            old_eigenvector_estimate != 0
-        )
+        mask = (new_eigenvector_estimate != 0) & (old_eigenvector_estimate != 0)
         iter_eigenvalue_estimates = (
             new_eigenvector_estimate[mask] / old_eigenvector_estimate[mask]
         )
@@ -245,9 +237,7 @@ def eigenvector_centrality(
 
         # Normalise to maintain probability space and prevent overflows
         norm_factor = np.linalg.norm(new_eigenvector_estimate)
-        old_eigenvector_estimate = np.array(
-            new_eigenvector_estimate / norm_factor
-        )
+        old_eigenvector_estimate = np.array(new_eigenvector_estimate / norm_factor)
 
     # Break out of algorithm if maximum iterations were reached
     else:
@@ -379,9 +369,7 @@ def eigenvector_centrality_w_adjacency(
         # To estimate eigenvalue and error, take ratio of new to old
         # eigenvector ignoring zeros, whose mean and standard deviation
         # represent new estimate and error
-        mask = (new_eigenvector_estimate != 0) & (
-            old_eigenvector_estimate != 0
-        )
+        mask = (new_eigenvector_estimate != 0) & (old_eigenvector_estimate != 0)
         iter_eigenvalue_estimates = (
             new_eigenvector_estimate[mask] / old_eigenvector_estimate[mask]
         )
@@ -407,9 +395,7 @@ def eigenvector_centrality_w_adjacency(
 
         # Normalise to maintain probability space and prevent overflows
         norm_factor = np.linalg.norm(new_eigenvector_estimate)
-        old_eigenvector_estimate = np.array(
-            new_eigenvector_estimate / norm_factor
-        )
+        old_eigenvector_estimate = np.array(new_eigenvector_estimate / norm_factor)
 
     # Break out of algorithm if maximum iterations were reached
     else:
@@ -534,9 +520,7 @@ def comp_ptm_std(
         for j in range(n_diseases):
             for k in numba.prange(n_edges):
                 coef = 1.0 / e_deg[k]
-                prob_trans_mat[i, j] += (
-                    term1[i, k] * inc_mat_front[j, k] * coef
-                )
+                prob_trans_mat[i, j] += term1[i, k] * inc_mat_front[j, k] * coef
 
         # For any nodes where they were never a successor/predecessor, i.e.
         # their row is entirely 0, set the self-returning probability to 1 -
@@ -637,9 +621,7 @@ def pagerank_centrality(
     # Time taken to compute PTM
     if verbose:
         st = t.time()
-        print(
-            f"Computing probability transition matrix for {rep} representation"
-        )
+        print(f"Computing probability transition matrix for {rep} representation")
 
     # 1) Select representation, i.e. standard or dual (simple/prog/reg)
     # Choose probability transition matrix via representation
@@ -691,9 +673,7 @@ def pagerank_centrality(
         # To estimate eigenvalue and error, take ratio of new to old
         # eigenvector ignoring zeros, whose mean and standard deviation
         # represent new estimate and error
-        mask = (new_eigenvector_estimate != 0) & (
-            old_eigenvector_estimate != 0
-        )
+        mask = (new_eigenvector_estimate != 0) & (old_eigenvector_estimate != 0)
         iter_eigenvalue_estimates = (
             new_eigenvector_estimate[mask] / old_eigenvector_estimate[mask]
         )
@@ -720,9 +700,7 @@ def pagerank_centrality(
 
         # Normalise to maintain probability space and prevent overflows
         norm_factor = np.linalg.norm(new_eigenvector_estimate, ord=1)
-        old_eigenvector_estimate = np.array(
-            new_eigenvector_estimate / norm_factor
-        )
+        old_eigenvector_estimate = np.array(new_eigenvector_estimate / norm_factor)
 
     # Break out of algorithm if maximum iterations were reached
     else:

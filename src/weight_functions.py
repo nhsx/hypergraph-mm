@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numba
 import numpy as np
 
-import utils
+from src import utils
 
 ###############################################################################
 # 1. CALCULATE OVERLAP COEFFICIENT
