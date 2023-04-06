@@ -51,7 +51,7 @@ To get a local copy up and running follow these simple steps.
 
 To clone the repo:
 
-`git clone https://github.com/nhsx/hypergraph-testing`
+`git clone https://github.com/nhsx/hypergraph-mm`
 
 To create a suitable environment we suggest:
 - Build conda environment via `conda create --name hg-test python=3.8`
@@ -77,7 +77,7 @@ The documentation is found in the `docs` folder and uses [mkdocs](https://www.mk
 
 ### Roadmap
 
-See the [Issues](https://github.com/nhsx/hypergraph-testing/issues) in GitHub for a list of proposed features (and known issues).
+See the [Issues](https://github.com/nhsx/hypergraph-mm/issues) in GitHub for a list of proposed features (and known issues).
 
 ### Contributing
 
