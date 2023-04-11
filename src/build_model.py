@@ -1003,9 +1003,10 @@ def compute_weights(
             dice_type,
         )
 
-        # If Power dice then add single set disease weights manually
-        if dice_type == 0:
-            hyperedge_weights[:N_diseases] = binmat.sum(axis=0) / binmat.shape[0]
+        # # If Power dice then add single set disease weights manually
+        # if dice_type == 0:
+        #     hyperedge_weights[:N_diseases] = binmat.sum(axis=0) / binmat.shape[0]
+        #     print(hyperedge_weights)
 
     # Otherwise, If using overlap coefficient or older versions of the
     # Sorensen-Dice coefficients
