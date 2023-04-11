@@ -4,7 +4,7 @@
 ### About the Project
 
 [![status: experimental](https://github.com/GIScience/badges/raw/master/status/experimental.svg)](https://github.com/GIScience/badges#experimental)
-
+![Tests](https://github.com/nhsx/hypergraph-mm/actions/workflows/tests.yml/badge.svg)
 
 [![MkDocs Material](https://img.shields.io/badge/style-MkDocs%20Material-darkblue "Markdown Style: MkDocs")](https://squidfunk.github.io/mkdocs-material/reference/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -78,6 +78,10 @@ The documentation is found in the `docs` folder and uses [mkdocs](https://www.mk
 ### Roadmap
 
 See the [Issues](https://github.com/nhsx/hypergraph-mm/issues) in GitHub for a list of proposed features (and known issues).
+
+### Testing
+
+Run tests by using `pytest test/test.py` in the top directory.
 
 ### Contributing
 

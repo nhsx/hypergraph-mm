@@ -6,7 +6,7 @@ import os
 
 # print(os.getcwd())
 os.chdir("../")
-from src import build_model, centrality, centrality_utils, utils, weight_functions
+from src import build_model, utils, weight_functions
 
 
 # TODO: Test numpy max number of hyperedges/arcs calculation
