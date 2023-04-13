@@ -3,7 +3,7 @@ import time as t
 import numba
 import numpy as np
 
-from src import centrality_utils
+from hypmm import centrality_utils
 
 ###############################################################################
 # 1. ADJACENCY MATRIX
@@ -200,7 +200,6 @@ def eigenvector_centrality(
     # all the other operations here are linear in it, so we are spend very
     # little time in the rest of this loop body.
     for iteration in range(max_iterations):
-
         print("\rRunning iteration {}...".format(iteration), end="")
 
         # Iterate over vector
@@ -224,7 +223,6 @@ def eigenvector_centrality(
 
         # Check to see if tolerance has been met
         if eigenvalue_error_estimate / eigenvalue_estimate < tolerance:
-
             eig_est = float(f"{eigenvalue_estimate:.3g}")
             eig_err = float(f"{eigenvalue_error_estimate:.3f}")
             print(
@@ -358,7 +356,6 @@ def eigenvector_centrality_w_adjacency(
     # all the other operations here are linear in it, so we are spend very
     # little time in the rest of this loop body.
     for iteration in range(max_iterations):
-
         print("\rRunning iteration {}...".format(iteration), end="")
 
         # Iterate over vector
@@ -382,7 +379,6 @@ def eigenvector_centrality_w_adjacency(
 
         # Check to see if tolerance has been met
         if eigenvalue_error_estimate / eigenvalue_estimate < tolerance:
-
             print(
                 (
                     "\nConverged at largest eigenvalue "
@@ -550,7 +546,6 @@ def pagerank_centrality(
     eps=0,
     return_error=False,
 ):
-
     """
     This function uses a Chebyshev algorithm to find the eigenvector
     and largest eigenvalue (corresponding to the eigenvector
@@ -661,7 +656,6 @@ def pagerank_centrality(
     # whereas all the other operations here are linear in it, so we are spend
     # very little time in the rest of this loop body.
     for iteration in range(max_iterations):
-
         if verbose:
             print("\rRunning iteration {}...".format(iteration), end="")
 
@@ -686,7 +680,6 @@ def pagerank_centrality(
 
         # Check to see if tolerance has been met
         if eigenvalue_error_estimate / eigenvalue_estimate < tolerance:
-
             if verbose:
                 print(
                     (
