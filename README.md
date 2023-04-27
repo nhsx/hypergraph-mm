@@ -1,4 +1,4 @@
-# Hypergraph Testing
+# Hypergraph Multimorbidity (Hypergraph-mm)
 ## NHS England -  Digital Analytics and Research Team - PhD Internship Project
 
 ### About the Project
