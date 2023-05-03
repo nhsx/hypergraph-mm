@@ -2,6 +2,7 @@ matplotlib==3.6.0
 mkdocs==1.4.2
 mkdocs-material==8.5.10
 mkdocstrings[python]
+notebook==6.5.4
 numba==0.56.3
 numpy==1.23.4
 pandas==1.5.1
