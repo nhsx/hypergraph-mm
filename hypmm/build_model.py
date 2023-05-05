@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from src import centrality_utils
-from src import utils
-from src import weight_functions
+from hypmm import centrality_utils
+from hypmm import utils
+from hypmm import weight_functions
 
 ###############################################################################
 # 1. CREATE DIRECTED DATA
@@ -336,7 +336,6 @@ def process_individuals(data_arr, data_binmat, verbose=False):
     # Loop through remaining individuals to extract those with multiple
     # 1-duplicates
     for i in range(1, max(n_dupls)):
-
         # Take difference of locations where duplicates were observed
         dup_seq = dupl_seq_split[i]
         dup_seq_diff = np.diff(dup_seq, axis=1)
@@ -623,7 +622,6 @@ def compute_directed_model(
     # multimorbidity set
     n_row = 0
     for ii in range(n_obs):
-
         # EXTRACT INDIVIDUAL'S CONDITION SET, OBSERVED ORDERING, DUPLICATES
         # AND INCREMENT SINGLE-SET POPULATIONS
 
@@ -643,7 +641,6 @@ def compute_directed_model(
         # deduce their hyperarcs. If they are, move to next individual
         min_indidx = ind_idx[0]
         if min_indidx != -2:
-
             # COMPUTE DISEASE NODE AND SINGLE-PROGRESSION PREVALENCE
 
             # If individual doesn't have a 2-duplicate at end of progression
@@ -690,7 +687,6 @@ def compute_directed_model(
 
             # Loop over individual's progression set
             for jj in range(n_prog_obs):
-
                 # COMPUTE BINARY INTEGER MAPPING OF HYPERARC/HYPEREDGES
 
                 # Extract progression set element
@@ -724,7 +720,6 @@ def compute_directed_model(
                 # Check if hyperarc has been seen before, if not then it
                 # should still be 0 and needs to be added to incidence matrix
                 if hyperarc_prev[bin_tail, head_node] == 0:
-
                     # Add hyperarc to worklist
                     hyperarc_worklist[n_row] = elem
 
@@ -743,7 +738,6 @@ def compute_directed_model(
         # If individual only has 1 disease, then half contribution to head and
         # tail disease node and contribute to single-set disease prevalence
         else:
-
             # CONTRIBUTE PREVALENCE FOR INDIVIDUALS WITH ONLY 1 CONDITIONS
 
             # If the individual only had one condition add prevalence to top
@@ -1003,9 +997,10 @@ def compute_weights(
             dice_type,
         )
 
-        # If Power dice then add single set disease weights manually
-        if dice_type == 0:
-            hyperedge_weights[:N_diseases] = binmat.sum(axis=0) / binmat.shape[0]
+        # # If Power dice then add single set disease weights manually
+        # if dice_type == 0:
+        #     hyperedge_weights[:N_diseases] = binmat.sum(axis=0) / binmat.shape[0]
+        #     print(hyperedge_weights)
 
     # Otherwise, If using overlap coefficient or older versions of the
     # Sorensen-Dice coefficients
@@ -1160,7 +1155,6 @@ def compute_weights(
         # overcomplicated manner...
         hyperedge_counter = 0
         for idx, hyp_arc in top_hyperarcs_df.iterrows():
-
             # Loop over top hyperarcs according to plt_dis_prog
             # specifications, in each hyperarc extract tail diseases and
             # head disease.
