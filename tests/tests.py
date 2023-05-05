@@ -10,7 +10,6 @@ from hypmm import build_model, utils, weight_functions
 
 
 # TODO: Test numpy max number of hyperedges/arcs calculation
-# TODO: Powerset sorensen dice coef test
 # TODO: Directed Incidence matrix test
 # TODO: Node weights?
 
