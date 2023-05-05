@@ -80,7 +80,6 @@ def N_max_hyperarcs(n_diseases, b_hyp=True):
 
     # Loop over hyperedge degrees
     for k in range(2, n_diseases + 1):
-
         # Estimate n choose k using math.gamma supported by numba
         comb = N_choose_k(n_diseases, k)
         # comb = math.comb(n_diseases, k) NOT IMPLEMENTED IN NUMBA
@@ -459,9 +458,7 @@ def compute_worklist(edge_list, n_diseases, shuffle=False):
     return work_list
 
 
-def comp_edge_worklists(
-    hyperedge_arr, contribution_type="power", shuffle=False
-):
+def comp_edge_worklists(hyperedge_arr, contribution_type="power", shuffle=False):
     """
     Given an array of hyperedges from some dataset and a weighting system
     ("power", "exclusive" or "progression", construct work and edge lists for
@@ -484,7 +481,6 @@ def comp_edge_worklists(
 
     # Depending on if weight system is power set or exclusive
     if contribution_type == "power":
-
         # Compute list of all potential hyperedges including the power set of
         # all unique hyperedges observed above
         edges = list(
@@ -504,9 +500,7 @@ def comp_edge_worklists(
             )
         )
 
-    elif (contribution_type == "exclusive") or (
-        contribution_type == "progression"
-    ):
+    elif (contribution_type == "exclusive") or (contribution_type == "progression"):
         # Compute list of only observed hyperedges (this excludes all power
         # set edges)
         edges = [tuple(np.where(row)[0]) for row in hyperedge_arr]
@@ -571,9 +565,7 @@ def compute_progset(ind_cond, ind_idx, undirected=False):
         return
 
     # Create progression set as if individual had a clean progression
-    prog_set_list = [
-        ind_cond[:j].astype(np.int8) for j in range(2, hyp_degree + 1)
-    ]
+    prog_set_list = [ind_cond[:j].astype(np.int8) for j in range(2, hyp_degree + 1)]
     prog_set_arr = np.zeros((len(prog_set_list), n_diseases), dtype=np.int8)
     for i, arr in enumerate(prog_set_list):
         prog_set_arr[i] = np.array(
@@ -583,7 +575,6 @@ def compute_progset(ind_cond, ind_idx, undirected=False):
 
     # Check if ind_index is -1. If not, individual has a duplicate
     if ind_idx[0] != -1:
-
         # If constructing undirected progressions then build this into model
         # through the mult variable, mult is used to determine number of extra
         # hyperarcs/hyperedges
@@ -592,16 +583,13 @@ def compute_progset(ind_cond, ind_idx, undirected=False):
 
         # Check number of duplicates
         n_dupl = ind_idx.shape[0] - np.sum(ind_idx == -1)
-        n_new_hyperarcs = (
-            mult * n_dupl if ind_idx[0] != 0 else mult * n_dupl - 1
-        )
+        n_new_hyperarcs = mult * n_dupl if ind_idx[0] != 0 else mult * n_dupl - 1
         extra_progset = np.zeros((n_new_hyperarcs, n_diseases), dtype=np.int8)
         ind_indexes = ind_idx[:n_dupl] if n_new_hyperarcs > 0 else ind_idx[:0]
 
         # loop over indexes where 1-duplicates occurred
         j = 0
         for idx in ind_indexes:
-
             # Store first condition, the swapped pair of conditions to be
             # permuted and the second element of this pair
             deg0 = ind_cond[0]
@@ -735,7 +723,6 @@ def compute_pwset_progset(ind_cond, ind_idx, undirected=False):
 
     # Check if ind_index is -1. If not, individual has a duplicate
     if ind_idx[0] != -1:
-
         # If constructing undirected progressions then build this into model
         # through the mult variable, mult is used to determine number of extra
         # hyperarcs/hyperedges
@@ -744,16 +731,13 @@ def compute_pwset_progset(ind_cond, ind_idx, undirected=False):
 
         # Check number of duplicates
         n_dupl = ind_idx.shape[0] - np.sum(ind_idx == -1)
-        n_new_hyperarcs = (
-            mult * n_dupl if ind_idx[0] != 0 else mult * n_dupl - 1
-        )
+        n_new_hyperarcs = mult * n_dupl if ind_idx[0] != 0 else mult * n_dupl - 1
         extra_progset = np.zeros((n_new_hyperarcs, n_diseases), dtype=np.int8)
         ind_indexes = ind_idx[:n_dupl] if n_new_hyperarcs > 0 else ind_idx[:0]
 
         # loop over indexes where 1-duplicates occurred
         j = 0
         for idx in ind_indexes:
-
             # Store first condition, the swapped pair of conditions to be
             # permuted and the second element of this pair
             deg0 = ind_cond[0]
