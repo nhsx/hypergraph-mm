@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa: F401
 import numpy as np
 
 # import hypergraph-mm as hypmm
@@ -6,7 +6,7 @@ import os
 
 # print(os.getcwd())
 os.chdir("../")
-from hypmm import build_model, utils, weight_functions
+from hypmm import build_model, utils, weight_functions  # noqa: E402
 
 
 # TODO: Test numpy max number of hyperedges/arcs calculation
@@ -54,8 +54,10 @@ def test_complete_sorensen_dice_coef():
         simp_idx_worklist,
         colarr,
         "progression",
-        weight_functions.modified_sorensen_dice_coefficient,  # hypmm.weight_functions.modified_sorensen_dice_coefficient,
-        utils.compute_progset,  # hypmm.utils.compute_progset,  # progression (aggregate)
+        weight_functions.modified_sorensen_dice_coefficient,
+        # hypmm.weight_functions.modified_sorensen_dice_coefficient,
+        utils.compute_progset,
+        # hypmm.utils.compute_progset,  # progression (aggregate)
         dice_type=1,
         plot=False,
         ret_inc_mat=None,
@@ -113,8 +115,10 @@ def test_powerset_sorensen_dice_coef():
         simp_idx_worklist,
         colarr,
         "progression",
-        weight_functions.modified_sorensen_dice_coefficient,  # hypmm.weight_functions.modified_sorensen_dice_coefficient,
-        utils.compute_progset,  # hypmm.utils.compute_progset,  # progression (aggregate)
+        weight_functions.modified_sorensen_dice_coefficient,
+        # hypmm.weight_functions.modified_sorensen_dice_coefficient,
+        utils.compute_progset,  # hypmm.utils.compute_progset,
+        # progression (aggregate)
         dice_type=0,
         plot=False,
         ret_inc_mat=None,
