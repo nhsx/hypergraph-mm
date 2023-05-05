@@ -8,9 +8,7 @@ import scipy
 
 
 @numba.njit(fastmath=True, nogil=True)
-def degree_centrality(
-    inc_mat_tail, inc_mat_head, edge_weights, node_weights=None
-):
+def degree_centrality(inc_mat_tail, inc_mat_head, edge_weights, node_weights=None):
     """
     This method calculates the degree centrality for the directed hypergraph.
 
@@ -196,9 +194,7 @@ def iterate_eigencentrality_vector(incidence_matrix, weight, vector):
     subt = np.zeros_like(vector)
     for i in range(len(vector)):
         for k in range(weighted_incidence.shape[1]):
-            subt[i] += (
-                incidence_matrix[i, k] * weighted_incidence[i, k] * vector[i]
-            )
+            subt[i] += incidence_matrix[i, k] * weighted_incidence[i, k] * vector[i]
 
     # 5) subtract one from the other.
     result = np.zeros_like(vector)
