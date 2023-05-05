@@ -19,7 +19,7 @@ Please see the GDS [Git style guide in the 'How to store source code' page of th
 
 If you open a GitHub pull request on this repo, please update `CHANGELOG` to reflect your contribution.
 
-Add your entry under `Unreleased` as: 
+Add your entry under `Unreleased` as:
 - `Breaking changes`
 - `New features`
 - `Fixes`

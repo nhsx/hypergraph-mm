@@ -1,8 +1,8 @@
 # Open Code Checklist
-To ensure that the code we publish is appropraite, clear and reusable we require a set way of working when pushing code to private and public repoistories.  It is difficult to set any precise but generic standards and so we ask that the following checklist is considered with mandatroy items filled out. 
+To ensure that the code we publish is appropraite, clear and reusable we require a set way of working when pushing code to private and public repoistories.  It is difficult to set any precise but generic standards and so we ask that the following checklist is considered with mandatroy items filled out.
 
 ## When publishing your code you need to make sure:
-  
+
 ### you’re clear about who owns the code and how others can use it
 
 - [ ] Does your code have an appropriate licence and copyright notice?  (**Mandatory**)
@@ -12,7 +12,7 @@ To ensure that the code we publish is appropraite, clear and reusable we require
 - [ ] Who has responsibility for ongoing support and communications for the code? (**Optional** Best practice to assign, else state the code is not maintained and when the last update was)
 - [ ] Has a responsible disclosure process for security issues been defined? (**Mandatory** - could use github issues)
 - [ ] Who will address identified issues and security concerns? (**Mandatory**. - assign monitoring of above disclosure process)
-- [ ] Has semantic versioning been used? (**Optional**) 
+- [ ] Has semantic versioning been used? (**Optional**)
 - [ ] Have [contribution guidelines](https://github.com/alphagov/govuk-frontend/blob/master/CONTRIBUTING.md) or [PR style guides](https://github.com/alphagov/styleguides/blob/master/pull-requests.md) been included? (**Optional**)
 - [ ] Are package dependencies and libaries documented with versions? (**Optional**)
 
@@ -25,11 +25,11 @@ To ensure that the code we publish is appropraite, clear and reusable we require
 - [ ] Are any data transfers conducted safely and securely? (**Mandatory**)
 - [ ] Are any credentials contained in the source code? (**Mandatory** - check in both current version and git history)
 - [ ] Are any secret keys contained in the source code? (**Mandatory** - check in both current version and git history)
-- [ ] Are the commit messages informative? (**Optional**) 
+- [ ] Are the commit messages informative? (**Optional**)
 - [ ] Do the commit messages include any sensitive information (e.g. names)? (**Mandatory**)
 - [ ] Does the git history contain any sensitive information (e.g. at one time real data or credentials were in the code but have since been removed) (**Mandatory**)
 - [ ] Have notebook outputs been removed/checked for sensitive information? (**Mandatory** - check but some appropriate outputs maybe useful: [Example]( https://github.com/best-practice-and-impact/govcookiecutter/blob/main/%7B%7B%20cookiecutter.repo_name%20%7D%7D/.pre-commit-config.yaml))
-- [ ] Is configuration written as code and separated from analytical code? (**Optional**) 
+- [ ] Is configuration written as code and separated from analytical code? (**Optional**)
 
 ### You store it in a repository managed by your department (to make licensing/copyright clear)
 
