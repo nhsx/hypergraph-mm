@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numba
 import numpy as np
 
-from hypmm import utils
+from src import utils
 
 ###############################################################################
 # 1. CALCULATE OVERLAP COEFFICIENT
@@ -367,6 +367,7 @@ def modified_sorensen_dice_coefficient(
 
     # Loop over hyperedges in worklist
     for src_idx, src_elem in enumerate(hyperedge_worklist):
+
         # Extract disease indexes of hyperedge, degree and add prevalence
         # to numerator and increment denominator with same value
         src_hyper_idx = hyperedge_idx[src_idx]
@@ -383,6 +384,7 @@ def modified_sorensen_dice_coefficient(
         # in src_in_tgt as the first element, so skip this one using [1:]
         src_in_tgt = np.where(src_hyper_idx & hyperedge_idx == src_hyper_idx)[0][1:]
         for tgt_idx in src_in_tgt:
+
             # Work out target hyper edge unique integer and prevalence from
             # denom_arr
             tgt_hyper_idx = hyperedge_idx[tgt_idx]
@@ -658,6 +660,7 @@ def compute_hyperedge_weights(
     # Loop over hyperedges in worklist
     N_hyperedges = worklist.shape[0]
     for i in range(counter, N_hyperedges):
+
         # Extract disease indexes of hyperedge and disease titles
         elem = worklist[i]
         hyper_edge = elem[elem != -1]
@@ -723,6 +726,7 @@ def compute_hyperarc_weights(
     """
     # Loop over hyperarc worklist
     for hyperarc in worklist:
+
         # Extract indices of hyperarc and the diseases part of the progression.
         hyperarc = hyperarc[hyperarc != -1]
         degree = hyperarc.shape[0]
