@@ -1297,13 +1297,17 @@ def setup_vars(inc_mat, N_diseases, hyperarc_weights, hyperarc_titles, node_weig
     inc_mat_head = inc_mat.T.copy()
     inc_mat_head[inc_mat_head < 0] = 0
 
-    # If mort_type is None then create self-loops (self-edges)
-    selfedge_component = np.eye(N_nodes)[:N_diseases]
+    # Set up self-edges
+    inc_mat_tail[:, :N_nodes] = inc_mat_head[:, :N_nodes]
 
-    # Concatenate self-edge/mortality hyperarcs to tail and head incidence
-    # matrices
-    inc_mat_tail = np.concatenate([selfedge_component.T, inc_mat_tail], axis=1)
-    inc_mat_head = np.concatenate([selfedge_component.T, inc_mat_head], axis=1)
+    # Deprecated - 03/09/2023 - replaced by the line above.
+    # # If mort_type is None then create self-loops (self-edges)
+    # selfedge_component = np.eye(N_nodes)[:N_diseases]
+
+    # # Concatenate self-edge/mortality hyperarcs to tail and head incidence
+    # # matrices
+    # inc_mat_tail = np.concatenate([selfedge_component.T, inc_mat_tail], axis=1)
+    # inc_mat_head = np.concatenate([selfedge_component.T, inc_mat_head], axis=1)
 
     # Calculate tail and head, node and edge degrees
     node_degs, edge_degs = centrality_utils.degree_centrality(
