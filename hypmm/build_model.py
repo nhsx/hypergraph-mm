@@ -965,7 +965,7 @@ def compute_weights(
         st = t.time()
 
     # BUILD HYPERARC WEIGHTS - Try out
-    hyperarc_worklist, hyperarc_worklist = weight_functions.compute_hyperarc_weights(
+    hyperarc_weights, hyperarc_worklist = weight_functions.compute_hyperarc_weights(
         hyperarc_weights,
         hyperedge_worklist,
         hyperarc_prev,

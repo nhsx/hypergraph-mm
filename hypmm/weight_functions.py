@@ -472,7 +472,6 @@ def compute_hyperarc_weights(
     N_diseases = hyperedge_worklist.shape[1]
     N_hyperarcs = hyperarc_weights.shape[0]
     hyperarc_worklist = np.empty((N_hyperarcs, N_diseases), dtype=np.int8)
-    inc_mat = np.zeros_like(hyperarc_worklist)
     for i, elem in enumerate(hyperedge_worklist):
         # Extract disease indexes of hyperedge and disease titles
         hyper_edge = elem[elem != -1]
@@ -509,7 +508,6 @@ def compute_hyperarc_weights(
             child_weights = child_weights[child_weights > 0]
         else:
             sin_idx = hyper_edge[0]
-            inc_mat[sin_idx]
             child_worklist[0, 0] = sin_idx
             child_prev = np.array([hyperarc_prev[0, sin_idx]], dtype=np.float64)
             child_weights = hyperedge_weights[i] * (
@@ -620,7 +618,7 @@ def setup_weight_comp(
         hyperarc_progs[:n_diseases] = np.array(
             [f"{dis} -> {dis}" for dis in dis_cols[:n_diseases]], dtype=object
         )
-        hyperarc_counter = n_diseases
+        hyperarc_counter = 0
 
     # Node weights for disease nodes taking proportion of node prevalences for
     # head- and tail- counterpart for each disease
