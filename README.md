@@ -18,13 +18,13 @@ _**Note:** Only public or fake data are shared in this repository._
 
 ### Project Stucture
 
-The main code is found in the `src` folder of the repository (see Usage below for more information)
+The main code is found in the `hypmm` folder of the repository (see Usage below for more information)
 
 ```
 .
 ├── docs                    # Documentation
 ├── notebooks               # Notebooks
-├── src                     # Source files
+├── hypmm                   # Source files
 ├── .flake8
 ├── .gitignore
 ├── .pre-commit-config.yaml
