@@ -12,7 +12,7 @@
 
 This repository holds supporting code for the "Transforming Healthcare Data with Graph-based Techniques Using SAIL DataBank" project including a copy of the framework built to perform the hypergraph calculations.  It also supports the work presented in the pre-print [Representing multimorbid disease progressions using directed hypergraphs](https://doi.org/10.1101/2023.08.31.23294903).
 
-A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/).
+A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/) and a link to an associated streamlit app explaining the methodolody can be access [here](https://nhsx-hypergraphical-streamlit-hypergraphs-hklixt.streamlit.app/).
 
 _**Note:** Only public or fake data are shared in this repository._
 
