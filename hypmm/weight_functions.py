@@ -364,6 +364,7 @@ def modified_sorensen_dice_coefficient(
     N_weights, N_diseases = hyperedge_worklist.shape
     hyperedge_num = np.zeros(N_weights, dtype=np.float64)
     hyperedge_denom = np.zeros(N_weights, dtype=np.float64)
+    typ_flag = [(0, 1), (1, 1), (1, 0)][typ]
 
     # Loop over hyperedges in worklist
     for src_idx, src_elem in enumerate(hyperedge_worklist):
@@ -392,10 +393,11 @@ def modified_sorensen_dice_coefficient(
             tgt_denom_w = 1  # abs(src_N_hyper_edge - tgt_N_hyper_edge)+1
 
             hyperedge_denom[src_idx] += (
-                tgt_denom_w * tgt_denom_prev * typ
+                tgt_denom_w * tgt_denom_prev * typ_flag[0]
             )  # Upper power set
-            hyperedge_denom[tgt_idx] += tgt_denom_w * src_denom_prev  # Lower power set
-
+            hyperedge_denom[tgt_idx] += (
+                tgt_denom_w * src_denom_prev * typ_flag[1]
+            )  # Lower power set
     return hyperedge_num / hyperedge_denom
 
 
@@ -403,50 +405,7 @@ def modified_sorensen_dice_coefficient(
 # 4. HYPERARC OVERLAP WITH PARENT
 ###############################################################################
 
-
-@numba.njit(fastmath=True, nogil=True)
-def comp_hyperedge_overlap(inds, hyperarc_prev, hyperedge_prev):
-    """
-    Compute the prevalence of the hyperarc relative to the prevalence of its
-    parent hyperedge, i.e. it is the number of individuals with the observed
-    disease progression as part of their progression set divided by the total
-    number of individuals who have all diseases in inds, regardless of observer
-    ordering.
-
-    INPUTS:
-    ----------------
-        inds (np.array, dtype=np.int8) : Numpy array of indexes to represent
-        hyperarc.
-
-        hyperarc_prev (np.array, dtype=np.float64) : 2-D Prevalence array for
-        hyperarcs where row entries are indexed by binary representation of
-        tail nodes and columns are indexed by the disease index representing
-        the head node.
-
-        hyperedge_prev (np.array, dtype=np.float64) : 1-D Prevalence array for
-        the parent hyperedges including population sizes for single-set
-        diseases.
-    """
-    # Determine number of diseases since inds is in Numba compatibility form
-    inds = inds.astype(np.int64)
-    n_diseases = inds.shape[0]
-
-    # Work out binary integer mappings
-    bin_tail = 0
-    for i in range(n_diseases - 1):
-        bin_tail += 2 ** inds[i]
-    head_node = inds[n_diseases - 1]
-    bin_hyperedge = bin_tail + 2**head_node
-
-    # Numerator is prevalence of child hyperarc.
-    numerator = hyperarc_prev[bin_tail, head_node]
-
-    # Denominator is prevalence of parent hyperedge
-    denom = hyperedge_prev[bin_hyperedge]
-    zero_denom = int(denom > 0)
-    denominator = [1.0, denom][zero_denom]
-
-    return numerator / denominator, denom
+# DEPRECATED
 
 
 ###############################################################################
@@ -455,43 +414,72 @@ def comp_hyperedge_overlap(inds, hyperarc_prev, hyperedge_prev):
 
 
 @numba.njit(fastmath=True, nogil=True)
-def comp_hyperarc_weight(
-    inds, hyperarc_prev, hyperedge_prev, hyperedge_weights, hyperedge_indexes
+def compute_hyperarc_weights(
+    hyperarc_weights,
+    hyperedge_worklist,
+    hyperarc_prev,
+    hyperedge_prev,
+    hyperedge_weights,
+    hyperarc_counter,
 ):
     """
-    This weights a hyperarc by weighting the prevalence of its parent
-    hyperedge by how prevalent the hyperarc is relative to all other children
-    of the same parent hyperedge.
-
-    INPUTS:
-    ----------------
-        inds (np.array, dtype=np.int8) : Numpy array of indexes to represent
-        hyperarc.
-
-        hyperarc_prev (np.array, dtype=np.float64) : 2-D Prevalence array for
-        hyperarcs where row entries are indexed by binary representation of
-        tail nodes and columns are indexed by the disease index representing
-        the head node.
-
-        hyperedge_prev (np.array, dtype=np.float64) : 1-D Prevalence array for
-        the parent hyperedges including population sizes for single-set
-        diseases.
-
-        hyperedge_weights (np.array, dtype=np.float64) : 1-D weight array for
-        all hyperedges.
-
-        hyperedge_indexes (np.array, dtype=np.int64) : Order of hyperedges in
-        hyperedge_weights by binary encoding for fast calling of parent edge
-        weight.
+    New hyperarc weight function
     """
-    # Fetch weight of parent hyperedge
-    bin_ind = (2 ** (inds.astype(np.int64))).sum()
-    parent_weight = hyperedge_weights[hyperedge_indexes == bin_ind][0]
+    N_diseases = hyperedge_worklist.shape[1]
+    N_hyperarcs = hyperarc_weights.shape[0]
+    hyperarc_worklist = np.empty((N_hyperarcs, N_diseases), dtype=np.int8)
+    for i, elem in enumerate(hyperedge_worklist):
+        # Extract disease indexes of hyperedge and disease titles
+        hyper_edge = elem[elem != -1]
+        degree = hyper_edge.shape[0]
 
-    # Prevalence of hyperarc relative to hyperedge
-    hyperarc_weight, denom = comp_hyperedge_overlap(inds, hyperarc_prev, hyperedge_prev)
+        # Compute hyperarc weights of hyperedge's children
+        child_worklist = -1 * np.ones((degree, N_diseases), dtype=np.int8)
+        if degree != 1:
+            hyper_edge_sq = 2**hyper_edge
+            child_prevs = np.empty(degree, dtype=np.float64)
+            hyper_edge_idx = 0
+            for j in range(degree):
+                head = hyper_edge[j]
+                tail = np.sum(hyper_edge_sq[:j]) + np.sum(hyper_edge_sq[j + 1 :])
 
-    return parent_weight * hyperarc_weight, denom
+                child_worklist[j, degree - 1] = head
+                child_worklist[j, : degree - 1] = np.array(
+                    list(
+                        set(hyper_edge).difference(set(np.array([head], dtype=np.int8)))
+                    ),
+                    dtype=np.int8,
+                )
+
+                ch_prev = hyperarc_prev[tail, head]
+                child_prevs[j] = ch_prev
+
+                hyper_edge_idx += hyper_edge_sq[j]
+
+            # Compute hyperarc weights
+            child_weights = hyperedge_weights[i] * (
+                child_prevs / hyperedge_prev[hyper_edge_idx]
+            )
+            child_worklist = child_worklist[child_weights > 0]
+            child_weights = child_weights[child_weights > 0]
+        else:
+            sin_idx = hyper_edge[0]
+            child_worklist[0, 0] = sin_idx
+            child_prev = np.array([hyperarc_prev[0, sin_idx]], dtype=np.float64)
+            child_weights = hyperedge_weights[i] * (
+                child_prev / hyperedge_prev[2**sin_idx]
+            )
+
+        # Append hyperarc weights, child worklist and increment counters
+        hyperarc_weights[
+            hyperarc_counter : hyperarc_counter + child_weights.shape[0]
+        ] = child_weights
+        hyperarc_worklist[
+            hyperarc_counter : hyperarc_counter + child_weights.shape[0]
+        ] = child_worklist
+        hyperarc_counter += child_weights.shape[0]
+
+    return hyperarc_weights, hyperarc_worklist
 
 
 ###############################################################################
@@ -586,7 +574,7 @@ def setup_weight_comp(
         hyperarc_progs[:n_diseases] = np.array(
             [f"{dis} -> {dis}" for dis in dis_cols[:n_diseases]], dtype=object
         )
-        hyperarc_counter = n_diseases
+        hyperarc_counter = 0
 
     # Node weights for disease nodes taking proportion of node prevalences for
     # head- and tail- counterpart for each disease
@@ -677,74 +665,3 @@ def compute_hyperedge_weights(
         counter += 1
 
     return hyperedge_weights
-
-
-@numba.njit(fastmath=True, nogil=True)
-def compute_hyperarc_weights(
-    hyperarc_weights,
-    hyperarc_progs,
-    worklist,
-    disease_cols,
-    hyperarc_prev,
-    hyperedge_prev,
-    hyperedge_weights,
-    hyperedge_indexes,
-    counter,
-):
-    """
-    For fast Numba computation, wrap computation of hyperarc weights in
-    Numba-compatible functions
-
-    INPUTS:
-    ---------------------
-        hyperarc_weights (np.array, dtype=np.float64) : Hyperarc weights.
-
-        hyperarc_progs (np.array, dtype=string) : Hyperarc disease progression
-        titles
-
-        worklist (np.array, dtype=np.int8) : Hyperedge worklist.
-
-        disease_cols (np.array, dtype=<U24) : String array of disese columns.
-
-        hyperarc_prev (np.array, dtype=np.float64) : Hyperarc prevalence array
-        for hyperarcs.
-
-        hyperedge_prev (np.array, dtype=np.float64) : Hyperedge prevalence
-        array for deducing child hyperarc overlap
-
-        hyperedge_weights (np.array, dtype=np.float64) : Weights of parent
-        hyperedges.
-
-        hyperedge_indexes (np.array, dtype=np.int64) : Binary-integer encodings
-        of parent hyperedges, ordered the same as hyperedge_weights
-
-        counter (int) : Counter for adding weights to array depending on if
-        Complete Set Dice Coefficient or anything else.
-    """
-    # Loop over hyperarc worklist
-    for hyperarc in worklist:
-        # Extract indices of hyperarc and the diseases part of the progression.
-        hyperarc = hyperarc[hyperarc != -1]
-        degree = hyperarc.shape[0]
-        hyperarc_cols = disease_cols[hyperarc]
-
-        # Compute weight
-        weight, denom = comp_hyperarc_weight(
-            hyperarc,
-            hyperarc_prev,
-            hyperedge_prev,
-            hyperedge_weights,
-            hyperedge_indexes,
-        )
-
-        # Add weight and disease progression title
-        hyperarc_weights[counter] = weight
-        if degree != 1:
-            tail_set = np.sort(hyperarc_cols[:-1])
-            progression = ", ".join(tail_set) + " -> " + hyperarc_cols[-1]
-        else:
-            progression = f"{hyperarc_cols[-1]} -> {hyperarc_cols[-1]}"
-        hyperarc_progs[counter] = progression
-        counter += 1
-
-    return hyperarc_weights, hyperarc_progs

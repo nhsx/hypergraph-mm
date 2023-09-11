@@ -775,6 +775,7 @@ def compute_weights(
     verbose=True,
     ret_inc_mat=False,
     plot=True,
+    sort_weights=False,
     save_images=(False, None),
     plt_dis_prog=None,
 ):
@@ -790,59 +791,54 @@ def compute_weights(
 
     INPUTS:
     -------------
-        binmat (np.array, dtype=np.uint8) : Binary flag matrix whose test
-        observations are represented by rows and diseases depresented by
-        columns.
+        binmat (np.array, dtype=np.uint8) : Binary flag matrix whose test observations
+        are represented by rows and diseases depresented by columns.
 
-        conds_worklist (np.array, dtype=np.int8) : For each individual, the
-        worklist stores the ordered set of conditions via their columns
-        indexes. For compatability with Numba, once all conditions specified
-        per individual, rest of row is a stream if -1's.
+        conds_worklist (np.array, dtype=np.int8) : For each individual, the worklist
+        stores the ordered set of conditions via their columns indexes. For
+        compatability with Numba, once all conditions specified per individual, rest of
+        row is a stream if -1's.
 
-        idx_worklist (np.array, dtype=np.int8) : Worklist to specify any
-        duplicates. For each individuals, if -2 then they only have 1
-        condition, if -1 then they have no duplicates and if they have positive
-        integers indexing conds_worklist then it specifies which conditions
-        have a duplicate which needs taken care of.
+        idx_worklist (np.array, dtype=np.int8) : Worklist to specify any duplicates.
+        For each individuals, if -2 then they only have 1 condition, if -1 then they
+        have no duplicates and if they have positive integers indexing conds_worklist
+        then it specifies which conditions have a duplicate which needs taken care of.
 
         colarr (np.array, dtype="<U24") : Numpy array of disease column titles
 
-        contribution_type (str) : Type of contribution to hyperedges each
-        individual has, i.e. can be "exclusive" or "progression".
+        contribution_type (str) : Type of contribution to hyperedges each individual
+        has, i.e. can be "exclusive" or "progression".
 
-        weight_function (func) : Numba-compiled weight function, will be
-        version of the overlap coefficient and modified sorensen-dice
-        coefficient.
+        weight_function (func) : Numba-compiled weight function, will be version of
+        the overlap coefficient and modified sorensen-dice coefficient.
 
-        progression_function (func) : Numba-compiled progression function,
-        dictating exactly what hyperarcs, and therefore hyperedges, an
-        individual contributes to in the graph. Is either
-        utils.compute_progset, utils.compute_single_progset,
-        utils.compute_pwset_progset. The first used exclusive progressiion,
-        the second constructs a digraph and the third follows a power set
-        progression.
+        progression_function (func) : Numba-compiled progression function, dictating
+        exactly what hyperarcs, and therefore hyperedges, an individual contributes to
+        in the graph. Is either utils.compute_progset, utils.compute_single_progset,
+        utils.compute_pwset_progset. The first used exclusive progressiion, the
+        second constructs a digraph and the third follows a power set progression.
 
-        dice_type (int) : Type of Sorensen-Dice coefficient used, either 1
-        (Complete) or 0 (Power).
+        dice_type (int) : Type of Sorensen-Dice coefficient used, either 1 (Complete)
+        or 0 (Power).
 
         plot (bool) : Flag to plot hyperedge and hyperarc weights.
 
-        ret_inc_mat (bool) : Flag to return the tail and head incidence
-        matrices.
+        ret_inc_mat (bool) : Flag to return the tail and head incidence matrices.
 
         verbose (bool) : Flag to print updates on computing incidence matrix,
         prevalence arrays and weights.
 
-        save_images (2-tuple) : Save hyperedge, hyperarc and node weight
-        graphs. First element of tuple is boolean flag, second element is file
-        path to save images.
+        save_images (2-tuple) : Save hyperedge, hyperarc and node weight graphs.
+        First element of tuple is boolean flag, second element is file path to
+        save images.
 
-        plt_dis_prog (str) : Flag to plot hyperedge-hyperarc plot but from a
-        seed condition, i.e. only plot top 28 edges edges whose tail includes a
-        disease. If None, plots top 28.
+        plt_dis_prog (str) : Flag to plot hyperedge-hyperarc plot but from a seed
+        condition, i.e. only plot top 28 edges edges whose tail includes a disease.
+        If None, plots top 28.
     """
     # Number of observations and columns and set up end of progressions
     N_obs, N_diseases = binmat.shape
+    # columns_idxs = np.arange(N_diseases).astype(np.int8)
 
     if verbose:
         print("Building directed incidence matrix and prevalence arrays...")
@@ -888,53 +884,31 @@ def compute_weights(
         weight_function,
         dice_type,
     )
-
     string_output, hyperarc_output, node_weights, palette = output
-
     (
         hyperarc_progs,
         hyperarc_weights,
         hyperarc_worklist,
         hyperarc_counter,
     ) = hyperarc_output
-
     colarr, nodes, dis_dict = string_output
 
     # Build DataFrame for node weights
     node_weights_df = pd.DataFrame({"node": nodes, "weight": node_weights})
 
-    # Depending on contribution type, specify prevalence array for hyperedges
-    # and the hyperedge array to loop through. If "exclusive" just take unique
-    # rows of the original input binmat. Prevalence array comes from granular
-    # split-and-count of individuals of their final multimorbidity set.
-    hyperarc_num_prev = hyperedge_prev.copy()
+    # Depending on contribution type, specify prevalence array for hyperedges and the
+    # hyperedge array to loop through.
+    # If "progression" we take the unique, absolute rows of the directed incidence
+    # matrix, concatenated with the self-edges, as these cannot be represented in the
+    # directed incidence matrix. Prevalence array comes from compute_directed_model()
+    # assuming "progression" contribution.
+    hyperedge_num_prev = hyperedge_prev.copy()
+    hyperedge_arr = np.unique(np.abs(inc_mat), axis=0)
+    selfedge_arr = np.eye(N_diseases)
+    hyperedge_arr = np.concatenate([selfedge_arr, hyperedge_arr], axis=0)
 
-    columns_idxs = np.arange(N_diseases).astype(np.int8)
-    hyperedge_denom = utils.compute_integer_repr(binmat, columns_idxs, colarr)
-
-    if contribution_type == "exclusive":
-        hyperedge_num_prev = hyperedge_denom.copy()
-        hyperedge_arr = np.unique(binmat, axis=0)
-
-    # If "progression" we take the unique, absolute rows of the directed
-    # incidence matrix, concatenated with the self-edges, as these cannot be
-    # represented in the directed incidence matrix. Prevalence array comes
-    # from compute_directed_model() assuming "progression" contribution.
-    elif contribution_type == "progression":
-        hyperedge_num_prev = hyperedge_prev.copy()
-        hyperedge_arr = np.unique(np.abs(inc_mat), axis=0)
-        selfedge_arr = np.eye(N_diseases)
-        hyperedge_arr = np.concatenate([selfedge_arr, hyperedge_arr], axis=0)
-
-    # If "power" hyperedge prevalence is computed at runtime inside
-    # weight_function, but for numba compatability, we create a zero array for
-    # hyperedge_num_prev
-    elif contribution_type == "power":
-        hyperedge_arr = np.unique(binmat, axis=0)
-        hyperedge_num_prev = np.zeros_like(hyperedge_prev, dtype=np.float64)
-
-    # Build worklist of hyperedges, their unique integer representation and
-    # their disease set string
+    # Build worklist of hyperedges, their unique integer representation and their
+    # disease set string
     hyperedge_worklist = utils.comp_edge_worklists(
         hyperedge_arr, contribution_type, shuffle=False
     )
@@ -955,80 +929,27 @@ def compute_weights(
     hyperedge_N = hyperedge_N[sort_hyps]
     hyperedge_cols = hyperedge_cols[sort_hyps]
 
-    # Depending on function type, define denominator array. If Overlap
-    # coefficient we need single-disease total population sizes, i.e. we can
-    # use the hyperedge_prev we get from compute_directed_model()
-    if weight_function == weight_functions.comp_overlap_coeff:
-        denom_prev = pop_prev.copy()
-
-    # If "exclusive" contribution
-    elif contribution_type == "exclusive":
-        denom_prev = hyperedge_denom.copy()
-
-    # If "power" contribution, need to build prevalence array if we're using
-    # the reformulation of the Sorrensen-Dice coefficient
-    elif (
-        contribution_type == "power"
-        and weight_function == weight_functions.modified_sorensen_dice_coefficient
-    ):
-        hyperedge_num_prev = utils.comp_pwset_prev(binmat, hyperedge_worklist, colarr)
-        denom_prev = hyperedge_num_prev.copy()
-
-    # If using the modified sorensen-dice coefficient, this denominator will
-    # weight hyperedge/hyperarc prevalences relative to other prevalences of
-    # similar disease sets
-    else:
-        denom_prev = hyperedge_prev.copy()
+    # efine denominator array for computing hyperedge weights
+    denom_prev = hyperedge_prev.copy()
 
     # BUILD HYPEREDGE WEIGHTS
     if verbose:
-        print("\nComputing hyperedge weights...")
+        print("\nComputing weights...")
         st = t.time()
 
-    # Updated modified sorensen-dice coefficient combined Power and Complete
-    # here
-    if weight_function == weight_functions.modified_sorensen_dice_coefficient:
-        hyperedge_weights = weight_function(
-            hyperedge_worklist,
-            hyperedge_N,
-            hyperedge_indexes,
-            hyperedge_num_prev,
-            denom_prev,
-            dice_type,
-        )
+    # Updated modified sorensen-dice coefficient combined Power and Complete here
+    hyperedge_weights = weight_function(
+        hyperedge_worklist,
+        hyperedge_N,
+        hyperedge_indexes,
+        hyperedge_num_prev,
+        denom_prev,
+        dice_type,
+    )
 
-        # # If Power dice then add single set disease weights manually
-        # if dice_type == 0:
-        #     hyperedge_weights[:N_diseases] = binmat.sum(axis=0) / binmat.shape[0]
-        #     print(hyperedge_weights)
-
-    # Otherwise, If using overlap coefficient or older versions of the
-    # Sorensen-Dice coefficients
-    else:
-        # Initialise hyperedge weights
-        hyperedge_weights = np.empty_like(hyperedge_indexes, dtype=np.float64)
-        if weight_function == weight_functions.modified_dice_coefficient_comp:
-            hyperedge_counter = 0
-
-        # If Overlap of Power Dice, compute single disease set edge weights as
-        # the proportion of individuals with the disease out of all
-        # individuals.
-        else:
-            hyperedge_weights[:N_diseases] = binmat.sum(axis=0) / binmat.shape[0]
-            hyperedge_counter = N_diseases
-
-        # Compute hyperedge weights
-        hyperedge_weights = weight_functions.compute_hyperedge_weights(
-            binmat,
-            hyperedge_weights,
-            hyperedge_worklist,
-            colarr,
-            hyperedge_num_prev,
-            denom_prev,
-            weight_function,
-            contribution_type,
-            hyperedge_counter,
-        )
+    # If Power dice then add single set disease weights manually
+    if dice_type == 0:
+        hyperedge_weights[:N_diseases] = binmat.sum(axis=0) / binmat.shape[0]
 
     # Build dataframe of hyperedge weights and sort if specified
     hyperedge_indexes = np.asarray(hyperedge_indexes, dtype=np.int64)
@@ -1043,27 +964,39 @@ def compute_weights(
         print("\nComputing hyperarc weights...")
         st = t.time()
 
-    # BUILD HYPERARC WEIGHTS
-    output = weight_functions.compute_hyperarc_weights(
+    # BUILD HYPERARC WEIGHTS - Try out
+    hyperarc_weights, hyperarc_worklist = weight_functions.compute_hyperarc_weights(
         hyperarc_weights,
-        hyperarc_progs,
-        hyperarc_worklist,
-        colarr,
+        hyperedge_worklist,
         hyperarc_prev,
-        hyperarc_num_prev,
+        hyperedge_prev,
         hyperedge_weights,
-        hyperedge_indexes,
         hyperarc_counter,
     )
-    hyperedge_weights, hyperarc_progs = output
+
+    if verbose:
+        print(f"Completed in {round(t.time()-st,2)} seconds.")
+        print("\nComputing hyperarc progressions...")
+        st = t.time()
+
+    # Replaces weight_functions.build_hyperarc_progs()
+    hyperarc_progs = list(
+        map(
+            lambda x: ", ".join(x[: -1 * [1, -1][int(len(x) == 1)]]) + f" -> {x[-1]}",
+            map(lambda x: colarr[x[x != -1]], hyperarc_worklist),
+        )
+    )
+
+    # Build incidence matrix using worklist
+    inc_mat = build_dir_incmat(hyperarc_worklist)
+
+    if verbose:
+        print(f"Completed in {round(t.time()-st,2)} seconds.")
 
     # Build dataframe of hyperedge weights and sort if specified
     hyperarc_weights_df = pd.DataFrame(
         {"progression": hyperarc_progs, "weight": hyperarc_weights}
     )
-
-    if verbose:
-        print(f"Completed in {round(t.time()-st,2)} seconds.")
 
     # Plot hyperedge, hyperarc and node weights
     if plot:
@@ -1083,7 +1016,6 @@ def compute_weights(
             data=sorted_hyperedge_weights_df.iloc[:n],
             ax=ax,
         )
-        # ax.set_title("Hyperedge Weights", fontsize=18)
         ax.set_ylabel("Disease Set", fontsize=15)
         ax.set_xticks(ax.get_xticks())
         ax.set_xticklabels(np.round(ax.get_xticks(), 2), fontsize=15)
@@ -1093,20 +1025,16 @@ def compute_weights(
         # Just hyperarcs
         hyperarc_fig, ax = plt.subplots(1, 1, figsize=(10, 8))
         sns.barplot(
-            x="weight",
-            y="progression",
-            data=sorted_hyperarc_weights_df.iloc[:n],
-            ax=ax,
+            x="weight", y="progression", data=sorted_hyperarc_weights_df.iloc[:n], ax=ax
         )
-        # ax.set_title("Hyperarc Edge Weights", fontsize=18)
         ax.set_ylabel("Disease Progression", fontsize=15)
         ax.set_xticks(ax.get_xticks())
         ax.set_xticklabels(np.round(ax.get_xticks(), 2), fontsize=15)
         ax.set_xlabel("Weight", fontsize=15)
         hyperarc_fig.tight_layout(pad=0)
 
-        # Build dataframe of top hyperarc weights to plot and their parent
-        # hyperedge weights
+        # Build dataframe of top hyperarc weights to plot and their parent hyperedge
+        # weights
         edge_arc_df = pd.DataFrame(
             columns=[
                 "progression",
@@ -1114,71 +1042,81 @@ def compute_weights(
                 "disease_set",
                 "hyperedge_weight",
                 "hyperedge_index",
-            ]
+            ],
+            dtype=object,
         )
+        # The additional ", dtype=object" is required ony when in JupyterLab
+
+        # This should be uncommented when in JupyterLab
+        edge_arc_df.astype(
+            {
+                "hyperarc_weight": "float64",
+                "hyperarc_weight": "float64",
+                "hyperedge_index": "int32",
+            }
+        ).dtypes
 
         hyperarc_progs = sorted_hyperarc_weights_df["progression"]
 
-        # plt_dis_prog allows user to specify if hyperarc-hyperedge plot only
-        # shows top hyperarcs and their parents which include diseases
-        # specified in string tuple plt_dis_prog. If None, then plots top 28
-        # from all diseases.
+        # plt_dis_prog allows the user to specify if hyperarc-hyperedge plot only
+        # shows top hyperarcs and their parents which include diseases specified in
+        # string tuple plt_dis_prog. If None, then plots top 28 from all diseases.
         if plt_dis_prog is None:
             top_hyperarcs_df = sorted_hyperarc_weights_df.iloc[:n]
         else:
-            # There is the option here to filter top hyperarcs by either the
-            # diseases in plt_dis_prog being in the tail only (currently
-            # commented out) or allowing them to be in either the tail or head
-            # of hyperarcs.
-            dis = plt_dis_prog
-            # Only in tail
-            # title_prog_idx = [
-            #   i for i, p in enumerate(hyperarc_progs) if all(
-            #       [True if d in p.split(" -> ")[0] else False for d in dis]
-            #   )
-            # ]
+            # There is the option here to filter top hyperarcs by either the diseases
+            # in plt_dis_prog being in the tail only (currently commented out) or
+            # allowing them to be in either the tail or head of hyperarcs.
+            dis, typ = plt_dis_prog
 
-            # In tail and head
-            title_prog_idx = [
-                i
-                for i, p in enumerate(hyperarc_progs)
-                if all([True if d in p else False for d in dis])
-            ]
+            # Only in tail
+            if typ == "tail":
+                title_prog_idx = [
+                    i
+                    for i, p in enumerate(hyperarc_progs)
+                    if all([True if d in p.split(" -> ")[0] else False for d in dis])
+                ]
+            elif typ == "both":
+                # In tail and head
+                title_prog_idx = [
+                    i
+                    for i, p in enumerate(hyperarc_progs)
+                    if all([True if d in p else False for d in dis])
+                ]
+
             top_hyperarcs_df = (sorted_hyperarc_weights_df.iloc[title_prog_idx]).iloc[
                 :n
             ]
 
-        # Initialise the hyperedge counter to fill edge_arc_df with hyperarcs
-        # and their parents.
-        # Note: the code below is messy and there could well be a much smarter
-        # way of doing this, but I somehow decided to do it in an
-        # overcomplicated manner...
+        # Initialise the hyperedge counter to fill edge_arc_df with hyperarcs and their
+        # parents.
+        # Note: the code below is messy and there could well be a much smarter way of
+        # doing this, but somehow decided to it in an overcomplicated manner...
         hyperedge_counter = 0
         for idx, hyp_arc in top_hyperarcs_df.iterrows():
-            # Loop over top hyperarcs according to plt_dis_prog
-            # specifications, in each hyperarc extract tail diseases and
-            # head disease.
+            # Loop over top hyperarcs according to plt_dis_prog specifications,
+            # in each hyperarc extract tail diseases and head disease.
             prog, weight = hyp_arc
             prog_split = prog.split(" -> ")
             prog_tail = list(prog_split[0].split(", "))
             prog_head = prog_split[1]
 
-            # If hyperarc is NOT a self-transition, build hyperedge disease
-            # set string title
+            # If hyperarc is NOT a self-transition, build hyperedge disease set string
+            # title
             if prog_head not in prog_split[0]:
                 hyperedge = ", ".join(np.sort(prog_tail + [prog_head]))
                 hyperarc_title = ", ".join(prog_tail + [prog_head])
 
-            # Otherwise, the head disease WILL be the same as the tail disease
-            # and so hyperedge set is just the disease title,
-            # i.e. prog_tail[0] (as prog_tail is a list)
+            # Otherwise, the head disease WILL be the same as the tail disease and so
+            # hyperedge set is just the disease title, i.e. prog_tail[0] (as prog_tail
+            # is a list)
             else:
                 hyperedge = prog_tail[0]
                 hyperarc_title = prog_tail[0]
 
-            # From the sorted hyperedge weight dataframe, extract the relevant
-            # parent. I have a Try-Except block here in case no hyperedge
-            # parent is found. This should technically not happen.
+            # From the sorted hyperedge weight dataframe, extract the relevant parent.
+            # I have a Try-Except block here (moved to an if/else)
+            # in case no hyperedge parent is found. This should technically not happen
             hyperedge_info = sorted_hyperedge_weights_df[
                 sorted_hyperedge_weights_df["disease set"] == hyperedge
             ]
@@ -1189,9 +1127,8 @@ def compute_weights(
                 edge_weight = 0.0
                 hyperedge_sorted = ""
 
-            # If populated edge_arc_df dataframe already, check to see if
-            # parent has been seen before by processing a sibling hyperarc in a
-            # previous iteration
+            # If populated edge_arc_df dataframe already, check to see if parent has
+            # been seen before processing a sibling hyperarc in a previous iteration.
             if edge_arc_df.disease_set.shape[0] > 0:
                 sorted_sets = np.array(
                     [", ".join(np.sort(s.split(", "))) for s in edge_arc_df.disease_set]
@@ -1199,28 +1136,28 @@ def compute_weights(
                 check_edge = edge_weight == np.array(list(edge_arc_df.hyperedge_weight))
                 check_dis = hyperedge_sorted == sorted_sets
 
-            # If first entry in edge_arc_df, then no need to check (as it
-            # throws an error if we do), so manually set the bools to False
+            # If first entry in edge_arc_df, then no need to check (as it throws an
+            # error if we do), so manually set the bools to False
             else:
                 sorted_sets = edge_arc_df.disease_set
                 check_edge = np.array([False])
                 check_dis = np.array([False])
 
-            # check_bool checks the edge weight is the same and so is the
-            # disease set of the parent hyperedge to make
+            # check_bool checks the edge weight is the same and so is the disease set
+            # of the parent hyperedge
             check_bool = check_edge & check_dis
-            # If parent hyperedge seen before, extract the dataframe-relative
-            # row index for appending the child hyperarc and its parent easily
-            # to edge_arc_df
+            # If parent hyperedge seen before, extract the dataframe-relative row
+            # index for appending the child chyperarc and its parent easily to
+            # edge_arc_df
             if np.any(check_bool):
                 hyperedge_idx = edge_arc_df[check_bool]["hyperedge_index"].iloc[0]
             # Otherwise, this is a new hyperarc and corresponding parents, so
-            # incremement hyperedge_counter
+            # incrementing hyperedge_counter
             else:
                 hyperedge_idx = hyperedge_counter
                 hyperedge_counter += 1
 
-            # Append hyperarc child and hyperedge sibling to edge_arc_df
+            # Append hyperarc child and hyperedge subling to edge_arc_df
             row = pd.DataFrame(
                 dict(
                     progression=prog,
@@ -1230,7 +1167,18 @@ def compute_weights(
                     hyperedge_index=hyperedge_idx,
                 ),
                 index=[idx],
+                dtype=object,
             )
+            row.astype(
+                {
+                    "hyperarc_weight": "float64",
+                    "hyperarc_weight": "float64",
+                    "hyperedge_index": "int32",
+                }
+            ).dtypes
+            row["hyperarc_weight"] = weight
+            row["hyperedge_weight"] = edge_weight
+            row["hyperedge_index"] = hyperedge_idx
             edge_arc_df = pd.concat([edge_arc_df, row], axis=0)
 
         # Superimpose top hyperarcs onto their parent hyperedges
@@ -1262,12 +1210,14 @@ def compute_weights(
             palette=arc_palette[palette_idxs],
         )
         ax.grid("on")
-        if plt_dis_prog is None:
-            ax1.set_yticklabels(edge_arc_df.disease_set, fontsize=15)
-            ax1.set_ylabel("Disease Set (Hyperedge)", fontsize=18)
-        else:
-            ax1.set_yticklabels([], fontsize=15)
-            ax1.set_ylabel(None, fontsize=18)
+
+        # if plt_dis_prog is None:
+        ax1.set_yticklabels(edge_arc_df.disease_set, fontsize=15)
+        ax1.set_ylabel("Disease Set (Hyperedge)", fontsize=18)
+        # else:
+        #    ax1.set_yticklabels([], fontsize=15)
+        #    ax1.set_ylabel(None, fontsize=18)
+
         ax.tick_params(labelsize=15)
         hyphyp_fig.tight_layout(pad=0)
 
@@ -1291,18 +1241,22 @@ def compute_weights(
                 fpath = sys.path[0]
             else:
                 fpath = save_images[1]
-            hyperedge_fig.savefig(os.path.join(fpath, "hyperedge_weights.png"))
-            hyperarc_fig.savefig(os.path.join(fpath, "hyperarc_weights.png"))
-            hyphyp_fig.savefig(os.path.join(fpath, "hyperedge_arc_weights.png"))
-            node_fig.savefig(os.path.join(fpath, "node_weights.png"))
+            hyperedge_fig.savefig(
+                os.path.join(fpath, "hyperedge_weights.png"), bbox_inches="tight"
+            )
+            hyperarc_fig.savefig(
+                os.path.join(fpath, "hyperarc_weights.png"), bbox_inches="tight"
+            )
+            hyphyp_fig.savefig(
+                os.path.join(fpath, "hyperedge_arc_weights.png"), bbox_inches="tight"
+            )
+            node_fig.savefig(
+                os.path.join(fpath, "node_weights.png"), bbox_inches="tight"
+            )
 
     # If returning incidence matrix
     if ret_inc_mat:
-        output = inc_mat, (
-            hyperedge_weights_df,
-            hyperarc_weights_df,
-            node_weights_df,
-        )
+        output = inc_mat, (hyperedge_weights_df, hyperarc_weights_df, node_weights_df)
     elif ret_inc_mat is None:
         output = (
             inc_mat,
@@ -1343,13 +1297,17 @@ def setup_vars(inc_mat, N_diseases, hyperarc_weights, hyperarc_titles, node_weig
     inc_mat_head = inc_mat.T.copy()
     inc_mat_head[inc_mat_head < 0] = 0
 
-    # If mort_type is None then create self-loops (self-edges)
-    selfedge_component = np.eye(N_nodes)[:N_diseases]
+    # Set up self-edges
+    inc_mat_tail[:, :N_nodes] = inc_mat_head[:, :N_nodes]
 
-    # Concatenate self-edge/mortality hyperarcs to tail and head incidence
-    # matrices
-    inc_mat_tail = np.concatenate([selfedge_component.T, inc_mat_tail], axis=1)
-    inc_mat_head = np.concatenate([selfedge_component.T, inc_mat_head], axis=1)
+    # Deprecated - 03/09/2023 - replaced by the line above.
+    # # If mort_type is None then create self-loops (self-edges)
+    # selfedge_component = np.eye(N_nodes)[:N_diseases]
+
+    # # Concatenate self-edge/mortality hyperarcs to tail and head incidence
+    # # matrices
+    # inc_mat_tail = np.concatenate([selfedge_component.T, inc_mat_tail], axis=1)
+    # inc_mat_head = np.concatenate([selfedge_component.T, inc_mat_head], axis=1)
 
     # Calculate tail and head, node and edge degrees
     node_degs, edge_degs = centrality_utils.degree_centrality(
@@ -1383,3 +1341,21 @@ def setup_vars(inc_mat, N_diseases, hyperarc_weights, hyperarc_titles, node_weig
     )
 
     return output
+
+
+@numba.njit()
+def build_dir_incmat(hyperarc_worklist):
+    """
+    Given hyeperarc worklist, construct incidence matrix
+    """
+    inc_mat = np.zeros_like(hyperarc_worklist, dtype=np.int8)
+    for i, elem in enumerate(hyperarc_worklist):
+        hyperarc = elem[elem != -1]
+
+        head = hyperarc[-1]
+        tail = hyperarc[:-1]
+        inc_mat[i, head] = 1
+        for j in tail:
+            inc_mat[i, j] = -1
+
+    return inc_mat

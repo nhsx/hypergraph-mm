@@ -101,9 +101,9 @@ def test_powerset_sorensen_dice_coef():
     colarr = np.array(["A", "B", "C"], dtype="<U24")
 
     expected_weights = {
-        "A": (2 / 2),
-        "B": (1 / 1),
-        "C": (1 / 1),
+        "A": (2 / 4),
+        "B": (3 / 4),
+        "C": (3 / 4),
         "A, B": (2 / 5),
         "B, C": (1 / 3),
         "A, B, C": (1 / 8),

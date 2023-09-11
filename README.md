@@ -1,5 +1,5 @@
 # Hypergraph Multimorbidity (Hypergraph-mm)
-## NHS England -  Digital Analytics and Research Team - PhD Internship Project
+## NHS England -  Digital Analytics and Research Team - PhD Internship Projects
 
 ### About the Project
 
@@ -10,19 +10,21 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
-This repository holds supporting code for the Transforming Healthcare Data with Graph-based Techniques Using SAIL DataBank project including a copy of the framework built to perform the hypergraph calculations.  A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/).
+This repository holds supporting code for the "Transforming Healthcare Data with Graph-based Techniques Using SAIL DataBank" project including a copy of the framework built to perform the hypergraph calculations.  It also supports the work presented in the pre-print [Representing multimorbid disease progressions using directed hypergraphs](https://doi.org/10.1101/2023.08.31.23294903).
+
+A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/) and a link to an associated streamlit app explaining the methodolody can be access [here](https://nhsx-hypergraphical-streamlit-hypergraphs-hklixt.streamlit.app/).
 
 _**Note:** Only public or fake data are shared in this repository._
 
 ### Project Stucture
 
-The main code is found in the `src` folder of the repository (see Usage below for more information)
+The main code is found in the `hypmm` folder of the repository (see Usage below for more information)
 
 ```
 .
 ├── docs                    # Documentation
 ├── notebooks               # Notebooks
-├── src                     # Source files
+├── hypmm                   # Source files
 ├── .flake8
 ├── .gitignore
 ├── .pre-commit-config.yaml
@@ -111,6 +113,6 @@ of the [Open Government 3.0][ogl] licence.
 
 ### Contact
 
-To find out more about the [Digital Analytics and Research Team](https://www.nhsx.nhs.uk/key-tools-and-info/nhsx-analytics-unit/) visit our [project website](https://nhsx.github.io/AnalyticsUnit/projects.html) or get in touch at [england.tdau@nhs.net](mailto:england.tdau@nhs.net).
+To find out more about the [Digital Analytics and Research Team](https://www.nhsx.nhs.uk/key-tools-and-info/nhsx-analytics-unit/) visit our [project website](https://nhsx.github.io/AnalyticsUnit/projects.html) or get in touch at [datascience@nhs.net](mailto:datascience@nhs.net).
 
 <!-- ### Acknowledgements -->
