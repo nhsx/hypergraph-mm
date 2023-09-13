@@ -854,7 +854,11 @@ def compute_weights(
     elif progression_function == utils.compute_simple_progset:
         progression = 2
 
-    # Build incidence matrix, prevalence arrays and hyperarc worklists
+    # Build incidence matrix (ordered by observation), prevalence arrays
+    # and hyperarc worklists. Note that this incidence matrix
+    # is only used to generate the list of observed hyperedges and
+    # could be simplified to store less memory,
+    # since directed incidence matrix is computed below.
     st = t.time()
     output = compute_directed_model(
         binmat, conds_worklist, idx_worklist, progression_function, progression
@@ -957,14 +961,13 @@ def compute_weights(
     hyperedge_weights_df = pd.DataFrame(
         {"disease set": hyperedge_cols, "weight": hyperedge_weights}
     )
-    hyperedge_weights_df = hyperedge_weights_df[hyperedge_weights_df.weight > 0]
 
     if verbose:
         print(f"Completed in {round(t.time()-st,2)} seconds.")
         print("\nComputing hyperarc weights...")
         st = t.time()
 
-    # BUILD HYPERARC WEIGHTS - Try out
+    # Compute hyperarc weights
     hyperarc_weights, hyperarc_worklist = weight_functions.compute_hyperarc_weights(
         hyperarc_weights,
         hyperedge_worklist,
@@ -987,7 +990,8 @@ def compute_weights(
         )
     )
 
-    # Build incidence matrix using worklist
+    # Build incidence matrix ordered by new hyperarc worklist,
+    # which is used for downstream analysis
     inc_mat = build_dir_incmat(hyperarc_worklist)
 
     if verbose:
