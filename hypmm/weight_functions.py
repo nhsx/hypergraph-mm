@@ -463,12 +463,17 @@ def compute_hyperarc_weights(
             child_worklist = child_worklist[child_weights > 0]
             child_weights = child_weights[child_weights > 0]
         else:
+            # For self-loop hyperarcs
             sin_idx = hyper_edge[0]
+
+            # If single-set disease hyperedge prevalence is 0,
+            # catch before using as denominator
+            parent_prev = hyperedge_prev[2**sin_idx]
+            parent_prev = [1, parent_prev][int(parent_prev > 0)]
+
             child_worklist[0, 0] = sin_idx
             child_prev = np.array([hyperarc_prev[0, sin_idx]], dtype=np.float64)
-            child_weights = hyperedge_weights[i] * (
-                child_prev / hyperedge_prev[2**sin_idx]
-            )
+            child_weights = hyperedge_weights[i] * (child_prev / parent_prev)
 
         # Append hyperarc weights, child worklist and increment counters
         hyperarc_weights[
