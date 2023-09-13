@@ -172,33 +172,36 @@ def iterate_eigencentrality_vector(incidence_matrix, weight, vector):
 
     # we are calculating [M W M^T - diag(M W M^T)] v
     term_1 = np.zeros_like(vector)
+    N_nodes = len(vector)
+    N_edges = incidence_matrix.shape[1]
 
-    # 1) W M^T
-    weighted_incidence = np.zeros_like(incidence_matrix, dtype=np.float64)
-    for i in range(weighted_incidence.shape[0]):
-        for j in range(weighted_incidence.shape[1]):
-            weighted_incidence[i, j] += incidence_matrix[i, j] * weight[j]
+    # 1) W M^T (This is an E x N matrix)
+    weighted_incidence = np.zeros_like(incidence_matrix, dtype=np.float64).T
+    for i in range(N_nodes):
+        for j in range(N_edges):
+            weighted_incidence[j, i] += weight[j] * incidence_matrix[i, j]
 
-    # 2) W M^T v
-    intermediate = np.zeros(weighted_incidence.shape[1], dtype=np.float64)
-    for k in range(weighted_incidence.shape[1]):
-        for j in range(len(vector)):
-            intermediate[k] += weighted_incidence[j, k] * vector[j]
+    # 2) W M^T v (This should be an E x 1 vector)
+    intermediate = np.zeros(N_edges, dtype=np.float64)
+    for k in range(N_edges):
+        for j in range(N_nodes):
+            intermediate[k] += weighted_incidence[k, j] * vector[j]
 
-    # 3) M W M^T v
-    for i in range(len(vector)):
-        for k in range(weighted_incidence.shape[1]):
+    # 3) M W M^T v (This should be an N x 1 vector)
+    term_1 = np.zeros_like(vector)
+    for i in range(N_nodes):
+        for k in range(N_edges):
             term_1[i] += incidence_matrix[i, k] * intermediate[k]
 
     # 4) diag(M W M^T v) can be done in one step using W M^T from before
     subt = np.zeros_like(vector)
-    for i in range(len(vector)):
-        for k in range(weighted_incidence.shape[1]):
-            subt[i] += incidence_matrix[i, k] * weighted_incidence[i, k] * vector[i]
+    for i in range(N_nodes):
+        for k in range(N_edges):
+            subt[i] += incidence_matrix[i, k] * weighted_incidence[k, i] * vector[i]
 
     # 5) subtract one from the other.
     result = np.zeros_like(vector)
-    for i in range(len(vector)):
+    for i in range(N_nodes):
         result[i] = term_1[i] - subt[i]
 
     return result
