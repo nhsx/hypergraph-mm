@@ -1,4 +1,4 @@
-# Hypergraph Multimorbidity (Hypergraph-mm)
+# Hypergraph Multimorbidity (hypergraph-mm)
 ## NHS England -  Digital Analytics and Research Team - PhD Internship Projects
 
 ### About the Project
@@ -10,11 +10,17 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
-This repository holds supporting code for the "Transforming Healthcare Data with Graph-based Techniques Using SAIL DataBank" project including a copy of the framework built to perform the hypergraph calculations.  It also supports the work presented in the pre-print [Representing multimorbid disease progressions using directed hypergraphs](https://doi.org/10.1101/2023.08.31.23294903).
+`hypergraph-mm` holds supporting code for the "Transforming Healthcare Data with Graph-based Techniques Using SAIL DataBank" project including a copy of the framework built to perform the hypergraph calculations.  It was undertaken over two internships:
+- **Jamie Burke** ([GitHub: jaburke166](https://github.com/jaburke166), Wave Three, July-December 2022)
+- **Zoe Hancox** ([GitHub: ZoeHancox](https://github.com/ZoeHancox), Wave Four, January-June 2023)
 
-A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/) and a link to an associated streamlit app explaining the methodolody can be access [here](https://nhsx-hypergraphical-streamlit-hypergraphs-hklixt.streamlit.app/).
+The associated reports from these internships can be found in the [reports](./reports) folder. A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/transforming-healthcare-data-graph-based-sail-update/) and an associated streamlit app explaining the methodology can be accessed [here](https://nhsx-hypergraphical-streamlit-hypergraphs-hklixt.streamlit.app/) with its GitHub Repository is [hypergraphical](https://github.com/nhsx/hypergraphical).
+
+The repository also supports the work presented in the pre-print [Representing multimorbid disease progressions using directed hypergraphs](https://doi.org/10.1101/2023.08.31.23294903).
 
 _**Note:** Only public or fake data are shared in this repository._
+
+Some of the data used in this project are available in the SAIL Databank at Swansea University, Swansea, UK. All proposals to use SAIL data are subject to review by an independent Information Governance Review Panel (IGRP). Before any data can be accessed, approval must be given by the IGRP. The IGRP carefully considers each project to ensure the proper and appropriate use of SAIL data. When approved, access is gained through a privacy-protecting trusted research environment (TRE) and remote access system referred to as the SAIL Gateway. SAIL has established an application process to be followed by anyone who would like to access data via [SAIL](https://www.saildatabank.com/application-process) - this study has been approved by the IGRP as project 1392.
 
 ### Project Stucture
 
@@ -97,12 +103,12 @@ Contributions are what make the open source community such an amazing place to l
 
 _See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidance._
 
-### License
+### Licence
 
 Unless stated otherwise, the codebase is released under [the MIT Licence][mit].
 This covers both the codebase and any sample code in the documentation.
 
-_See [LICENSE](./LICENSE) for more information._
+_See [LICENCE](./LICENCE) for more information._
 
 The documentation is [© Crown copyright][copyright] and available under the terms
 of the [Open Government 3.0][ogl] licence.
@@ -115,4 +121,6 @@ of the [Open Government 3.0][ogl] licence.
 
 To find out more about the [Digital Analytics and Research Team](https://www.nhsx.nhs.uk/key-tools-and-info/nhsx-analytics-unit/) visit our [project website](https://nhsx.github.io/AnalyticsUnit/projects.html) or get in touch at [datascience@nhs.net](mailto:datascience@nhs.net).
 
-<!-- ### Acknowledgements -->
+### Acknowledgements
+
+This project makes use of anonymised data held in the SAIL Databank, which is part of the national e-health records research infrastructure for Wales. We would like to acknowledge all the data providers who make anonymised data available for research.
