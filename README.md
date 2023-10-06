@@ -78,11 +78,6 @@ and then will be checked on commit.
 ### Usage
 See the examples in the `notebooks` folder for usage.
 
-### Documentation
-The documentation is found in the `docs` folder and uses [mkdocs](https://www.mkdocs.org/).  To make a local copy of the documentation:
-
-`mkdocs serve`
-
 ### Roadmap
 
 See the [Issues](https://github.com/nhsx/hypergraph-mm/issues) in GitHub for a list of proposed features (and known issues).
