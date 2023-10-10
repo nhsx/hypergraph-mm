@@ -1,1 +1,0 @@
-# Welcome to `hypergraph-mm`
