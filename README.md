@@ -1,4 +1,4 @@
-# Hypergraph Multimorbidity (hypergraph-mm)
+# Hypergraph Multimorbidity including Mortality (hypergraph-mmm)
 ## NHS England -  Digital Analytics and Research Team - PhD Internship Projects
 
 ### About the Project
@@ -10,13 +10,11 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
-`hypergraph-mm` holds supporting code for the "Transforming Healthcare Data with Graph-based Techniques Using SAIL DataBank" project including a copy of the framework built to perform the hypergraph calculations.  It was undertaken over two internships:
-- **Jamie Burke** ([GitHub: jaburke166](https://github.com/jaburke166), Wave Three, July-December 2022)
-- **Zoe Hancox** ([GitHub: ZoeHancox](https://github.com/ZoeHancox), Wave Four, January-June 2023)
+THis branch of the `hypergraph-mm` repository holds supporting code for an extension of the "Transforming Healthcare Data with Graph-based Techniques Using SAIL DataBank" project including a copy of the framework built to perform the hypergraph calculations including mortality.  It was undertaken in the second of two internships on the project by **Zoe Hancox** ([GitHub: ZoeHancox](https://github.com/ZoeHancox), Wave Four, January-June 2023).
 
-The associated reports from these internships can be found in the [reports](./reports) folder. A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/transforming-healthcare-data-graph-based-sail-update/) and an associated streamlit app explaining the methodology can be accessed [here](https://nhsx-hypergraphical-streamlit-hypergraphs-hklixt.streamlit.app/) with its GitHub Repository is [hypergraphical](https://github.com/nhsx/hypergraphical).
+The associated report for this part of the project can be found in the [reports](./reports) folder. A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/transforming-healthcare-data-graph-based-sail-update/) and an associated streamlit app explaining the methodology can be accessed [here](https://nhsx-hypergraphical-streamlit-hypergraphs-hklixt.streamlit.app/) with its GitHub Repository is [hypergraphical](https://github.com/nhsx/hypergraphical).
 
-The repository also supports the work presented in the pre-print [Representing multimorbid disease progressions using directed hypergraphs](https://doi.org/10.1101/2023.08.31.23294903).
+The repository also includes methodology supporting the work presented in the conference paper [Hypergraphs for Frailty Analysis Research Paper](https://link.springer.com/chapter/10.1007/978-3-031-56107-8_21).
 
 _**Note:** Only public or fake data are shared in this repository._
 
@@ -24,13 +22,13 @@ Some of the data used in this project are available in the SAIL Databank at Swan
 
 ### Project Stucture
 
-The main code is found in the `hypmm` folder of the repository (see Usage below for more information)
+The main code is found in the `hypmmm` folder of the repository (see Usage below for more information)
 
 ```
 .
 ├── docs                    # Documentation
 ├── notebooks               # Notebooks
-├── hypmm                   # Source files
+├── hypmmm                  # Source files
 ├── .flake8
 ├── .gitignore
 ├── .pre-commit-config.yaml

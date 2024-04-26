@@ -912,3 +912,4 @@ FodyWeavers.xsd
 
 .xls*
 .vscode
+.pytest_cache
