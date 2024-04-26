@@ -11,10 +11,12 @@
 
 
 `hypergraph-mm` holds supporting code for the "Transforming Healthcare Data with Graph-based Techniques Using SAIL DataBank" project including a copy of the framework built to perform the hypergraph calculations.  It was undertaken over two internships:
-- **Jamie Burke** ([GitHub: jaburke166](https://github.com/jaburke166), Wave Three, July-December 2022)
-- **Zoe Hancox** ([GitHub: ZoeHancox](https://github.com/ZoeHancox), Wave Four, January-June 2023)
+- **Jamie Burke** ([GitHub: jaburke166](https://github.com/jaburke166), Wave Three, July-December 2022) - currently on the [`main`](https://github.com/nhsx/hypergraph-mm) branch of the repository
+- **Zoe Hancox** ([GitHub: ZoeHancox](https://github.com/ZoeHancox), Wave Four, January-June 2023) - currently on the [`zh-hypergraph-mm-mort`](https://github.com/nhsx/hypergraph-mm/tree/zh-hypergraph-mm-mort) branch of the repository
 
-The associated reports from these internships can be found in the [reports](./reports) folder. A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/transforming-healthcare-data-graph-based-sail-update/) and an associated streamlit app explaining the methodology can be accessed [here](https://nhsx-hypergraphical-streamlit-hypergraphs-hklixt.streamlit.app/) with its GitHub Repository is [hypergraphical](https://github.com/nhsx/hypergraphical).
+The associated reports from these internships can be found in the [reports](./reports) folder on each branch.
+
+A link to the original project proposal can be found [here](https://nhsx.github.io/nhsx-internship-projects/transforming-healthcare-data-graph-based-sail-update/) and an associated streamlit app explaining the methodology can be accessed [here](https://nhsx-hypergraphical-streamlit-hypergraphs-hklixt.streamlit.app/) with its GitHub Repository is [hypergraphical](https://github.com/nhsx/hypergraphical).
 
 The repository also supports the work presented in the pre-print [Representing multimorbid disease progressions using directed hypergraphs](https://doi.org/10.1101/2023.08.31.23294903).
 
